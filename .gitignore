@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Runtime-generated Map Fountain state
+CURRENT_WMTS_URL.txt
+CURRENT_PHONE_TEST_URL.txt
+CURRENT_WMTS_QR.svg
+CURRENT_WMTS_QR.html
+
+# Map data / generated products
+*.mbtiles
+*.tpk
+*.tpkx
+*.gpkg
+
+# TLS private / operational material
+HTTPS CERT/*
+!HTTPS CERT/README.md
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Local environment
+.env
+*.log
+Thumbs.db
+.DS_Store
