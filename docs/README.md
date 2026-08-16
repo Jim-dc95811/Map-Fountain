@@ -10,6 +10,8 @@
 - [Technical architecture](TECHNICAL_ARCHITECTURE.md) — MBTiles, TMS/XYZ, WMTS, USB tether, HTTPS, QR, and cache-isolation mechanics.
 - [HTTPS certificate note](HTTPS_CERTIFICATE_NOTE.md) — current fixed-IP bench limitation and security boundary.
 - [AI / maintainer restart note](AI_CONTINUITY_RESTART_NOTE.md) — cold-start truth and do-not-regress rules.
+- [GitHub metadata](GITHUB_METADATA.md) — recommended About description/topics for the one repository setting the connector cannot edit.
+- [Release status](../releases/README.md) — why v0.2.1 is live-proven TEST rather than a finished public binary release.
 - [Roadmap](../ROADMAP.md) — next productization gates.
 - [Changelog](../CHANGELOG.md) — exact sequence from first 174-tile proof to v0.2.1.
 - [Security](../SECURITY.md) — private-key and network-exposure guidance.
