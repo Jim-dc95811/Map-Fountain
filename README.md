@@ -4,6 +4,8 @@
 
 **Serve raster MBTiles from a Windows PC or SSD to ArcGIS Earth Mobile over a private local link — no public Internet required.**
 
+![System architecture](https://raw.githubusercontent.com/Jim-dc95811/Map-Fountain/main/docs/ChatGPT%20Image%20Aug%2016%2C%202026%2C%2007_11_25%20PM.png)
+
 Map Fountain is a small Windows-first map-delivery tool built around a simple idea:
 
 ```text
@@ -19,8 +21,6 @@ ArcGIS Earth Mobile
 The current live-proven implementation is **`Rasta USB Map Fountain v0.2.1 TEST`**. The `Rasta` prefix remains in that working GUI because Map Fountain was discovered and built during Rasta / Offline GeoStack testing. This repository is the new standalone home for the delivery system itself.
 
 > **The map stays on the depot. The phone drinks only the tiles it needs.**
-
-![Map Fountain architecture](docs/architecture.svg)
 
 ---
 
