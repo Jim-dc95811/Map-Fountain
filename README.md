@@ -20,6 +20,8 @@ The current live-proven implementation is **`Rasta USB Map Fountain v0.2.1 TEST`
 
 > **The map stays on the depot. The phone drinks only the tiles it needs.**
 
+![Map Fountain architecture](docs/architecture.svg)
+
 ---
 
 ## Current status
@@ -128,13 +130,13 @@ Both
 
 ## Relationship to sibling projects
 
-### Offline GeoStack
+### [Offline GeoStack](https://github.com/Jim-dc95811/Offline-GeoStack)
 
 **Offline GeoStack** is the master operational geospatial project. It includes map manufacturing, ArcGIS Earth, GNSS, PRAVE, field positioning, and the no-operational-Internet doctrine.
 
 Map Fountain is the local map-delivery subsystem that grew large enough to deserve its own repository.
 
-### Rasta Pyramid Factory
+### [Rasta Pyramid Factory](https://github.com/Jim-dc95811/Rasta-Pyramid-Factory)
 
 **Rasta Pyramid Factory** manufactures multiscale raster pyramids from giant ordinary imagery as MBTiles, TPKX, or both.
 
@@ -150,6 +152,7 @@ Important current limitation: the bench build used temporary HTTPS certificate m
 
 See:
 
+- [`docs/PROJECT_STATUS_2026-08-16.md`](docs/PROJECT_STATUS_2026-08-16.md)
 - [`docs/OPERATOR_WORKFLOW.md`](docs/OPERATOR_WORKFLOW.md)
 - [`docs/TECHNICAL_ARCHITECTURE.md`](docs/TECHNICAL_ARCHITECTURE.md)
 - [`docs/ACCEPTANCE_RECORD.md`](docs/ACCEPTANCE_RECORD.md)
