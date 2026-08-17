@@ -2,33 +2,46 @@
 
 ## Scope
 
-Map Fountain is designed for private local map delivery. The current live-proven path uses a Windows HTTPS WMTS server and an Android device connected over USB tether.
+Map Fountain is designed for **private local map delivery**.
+
+Current live-proven field path:
+
+```text
+USB SSD
+→ GL.iNet Flint 2
+→ Samba / SMB
+→ private Wi-Fi or Ethernet
+→ Windows ArcGIS Earth
+```
+
+The router-only Windows path does not require a field HTTPS/WMTS server, TLS certificate, cloud account, or public Internet connection.
+
+## Field-network boundary
+
+- keep Map Fountain on a private local network;
+- do not enable Samba access from the public/WAN side unless a separate security review explicitly requires it;
+- use normal router authentication and firmware-maintenance practices;
+- prefer read-only map consumption where practical;
+- do not expose confidential operational map libraries beyond the intended local users;
+- use DHCP for ordinary Eaters rather than unnecessary manual static configuration.
 
 ## Never commit
 
 Do not commit:
 
-- TLS private keys;
-- private CA keys;
 - deployment credentials;
-- confidential MBTiles databases;
+- router administrator passwords;
+- confidential TPKX/MBTiles/map databases;
 - operational device secrets;
-- generated trust stores.
+- packet captures containing sensitive operational traffic without review;
+- private TLS/CA keys retained from historical compatibility experiments.
 
-Repository `.gitignore` rules block common private certificate/key material and map databases.
+## Historical HTTPS material
 
-## Current bench certificate
+The 2026-08-16 Windows-hosted WMTS experiment used temporary certificate material tied to a USB-tether test address. That is historical engineering evidence, **not the current field security model**.
 
-The 2026-08-16 live proof used temporary certificate material tied to PC-side USB-tether IP `10.13.166.115`.
-
-The private key from that proof is intentionally absent from this public repository.
-
-## Network exposure
-
-The current server binds to `0.0.0.0` so the tethered Android can reach it. Operators should understand that this can expose the service on other active Windows network interfaces as well.
-
-A future production branch should consider binding more narrowly to the selected/private adapter when that can be done without making the operator workflow brittle.
+Private keys from that experiment remain intentionally absent from the public repository.
 
 ## Reporting
 
-For security-sensitive findings, do not paste live private keys, credentials, or confidential map data into a public issue. Describe the behavior without publishing secrets.
+For security-sensitive findings, do not paste live credentials, private keys, confidential maps, or sensitive packet contents into a public issue. Describe the behavior without publishing secrets.
