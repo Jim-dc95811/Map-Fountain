@@ -2,9 +2,9 @@
 
 ## Current state
 
-**Router-only Map Fountain is LIVE-PROVEN on the 2026-08-17 Windows / ArcGIS Earth target.**
+**Router-only Map Fountain is LIVE-PROVEN on both Windows ArcGIS Earth and ArcGIS Earth Mobile.**
 
-Proven chain:
+### Windows
 
 ```text
 USB SSD
@@ -16,69 +16,134 @@ USB SSD
 → native network-hosted TPKX
 ```
 
-The production-scale `ESG1N.tpkx` package was benchmarked through the router over Ethernet and Wi-Fi, then opened directly from the router share and rendered interactively in ArcGIS Earth over Wi-Fi.
+### Android
 
-The field architecture is **router only**. The router remains intentionally dumb: storage, DHCP/local networking, and file sharing. ArcGIS Earth remains the GIS runtime.
+```text
+Static REST WMTS folder
+→ USB SSD
+→ GL.iNet Flint 2 local HTTPS
+→ Wi-Fi
+→ Android
+→ ArcGIS Earth Mobile
+```
+
+The router remains intentionally dumb: storage, DHCP/private networking, Samba, and ordinary exact-file HTTPS delivery. No active GIS server is required in the accepted field architecture.
 
 See:
 
 - [`README.md`](README.md)
+- [`docs/STATIC_REST_WMTS_ANDROID_ACCEPTANCE_2026-08-17.md`](docs/STATIC_REST_WMTS_ANDROID_ACCEPTANCE_2026-08-17.md)
 - [`docs/MAP_FOUNTAIN_ROUTER_ACCEPTANCE_2026-08-17.md`](docs/MAP_FOUNTAIN_ROUTER_ACCEPTANCE_2026-08-17.md)
 - [`docs/ACCEPTANCE_RECORD.md`](docs/ACCEPTANCE_RECORD.md)
-- [`docs/arcgis_system_router_flowchart_2026-08-17.svg`](docs/arcgis_system_router_flowchart_2026-08-17.svg)
 
-## Immediate gate — Android
+---
 
-### ArcGIS Earth Mobile on the router-only architecture
+# Immediate gate — production Static REST WMTS manufacturing
 
-**Status: NEXT ACCEPTANCE GATE**
+Android consumption has passed. The next problem is not “can Android use the router?” It can.
 
-The Windows direct-TPKX-over-Samba path is proven. Android must now be tested against the same router-attached SSD without reviving a field GIS-server appliance by default.
+The next problem is making the accepted Android product practical at large scale.
 
-Start from the simplest client-compatible possibilities and let ArcGIS Earth Mobile decide acceptance.
+## Giant-folder rule
 
-Questions to answer:
+Static REST WMTS removes the active field GIS server by expanding the map into individual raster tile files.
 
-- Can ArcGIS Earth Mobile consume a useful map directly from router-attached storage?
-- Which native or standards-based input path does the Android client actually accept from the private Wi-Fi network?
-- Can the map remain on the SSD instead of being copied wholesale to the phone?
-- What, if any, thin compatibility layer is truly required?
-- Can the result operate with outside Internet removed?
+For large maps this means very large directory trees.
 
-Do not add server complexity before the real mobile target demonstrates a need.
+Treat the expanded WMTS tree as a **deployment artifact**, not the preferred compact master/archive format.
 
-## Follow-on gates
+Keep:
 
-### ArcGIS Earth Ethernet application comparison
+- MBTiles as compact raster master/interchange;
+- TPKX as compact Windows deployment product;
+- Static REST WMTS as expanded Android deployment product.
+
+## Factory work to freeze next
+
+1. Add/select **Static REST WMTS** output mode.
+2. Use short map IDs suitable for deep paths and QR codes.
+3. Preflight tile count.
+4. Preflight raster payload size and destination free space.
+5. Support direct-to-removable-SSD output so millions of files do not need a second copy operation.
+6. Generate unique/versioned service identities to prevent stale mobile-cache collisions.
+7. Generate `WMTSCapabilities.xml` automatically.
+8. Convert MBTiles/TMS rows to WMTS top-origin rows automatically when deriving from MBTiles.
+9. Generate QR code automatically for the final capabilities URL.
+10. Verify matrix limits, tile count, representative paths, and capabilities after build.
+11. Provide a clean whole-map delete/replace workflow.
+
+The accepted runtime contract is frozen. The final Factory UI and exact deployment root-folder naming are not yet frozen.
+
+---
+
+# Follow-on Android gates
+
+## Larger and denser map
+
+Run the same accepted Static REST WMTS architecture with a materially larger map and denser adjacent coverage.
+
+Observe:
+
+- time to first useful display;
+- progressive zoom;
+- deliberate pan;
+- rapid pan/zoom;
+- recovery after stalls;
+- repeated visits to cached and uncached areas.
+
+## Navigation characterization
+
+Current live observation:
+
+- slow, deliberate movements work;
+- rapid gestures can cause stalls or erratic display behavior.
+
+Do not guess the cause. Distinguish among:
+
+- many-small-file HTTPS overhead;
+- Wi-Fi latency/throughput;
+- ArcGIS Earth Mobile request concurrency/cache behavior;
+- tile-pyramid density.
+
+## Cold/reconnect behavior
+
+Test:
+
+- close/reopen ArcGIS Earth Mobile;
+- phone Wi-Fi leave/rejoin;
+- router reboot;
+- SSD detach/reattach only under controlled conditions;
+- map reload after cache clear.
+
+## Multiple Eaters
+
+Test two or more ArcGIS Earth clients against the same router-attached SSD before making a supported multi-client claim.
+
+---
+
+# Windows follow-on gates
+
+## ArcGIS Earth Ethernet application comparison
 
 Repeat the successful ArcGIS Earth / `ESG1N.tpkx` direct-network test over Ethernet while changing no other major variable.
 
 Compare initial open behavior, time to first useful display, pan/zoom responsiveness, SMB/TCP byte flow, and caching/read-ahead behavior.
 
-### Wi-Fi ArcGIS Earth navigation characterization
+## Windows Wi-Fi navigation characterization
 
-The map rendered successfully over Wi-Fi. Characterize real operator patterns:
+The map already rendered successfully over Wi-Fi. Characterize real operator patterns rather than synthetic throughput alone.
 
-- deliberate pan;
-- progressive deep zoom;
-- return to overview;
-- long traverse across package coverage;
-- close/reopen;
-- Wi-Fi leave/rejoin.
+---
 
-### Multiple Eaters
+# Feeder workflow
 
-Test two or more clients against the same router-attached SSD before making any supported multi-client claim.
-
-### Feeder workflow
-
-After consumption behavior is stable, build the basecamp maintenance path:
+After deployment behavior is stable, build the basecamp maintenance path:
 
 ```text
 find Map Fountain
 → inspect SSD inventory
-→ compare with approved master library
-→ copy new maps
+→ compare with approved compact master library
+→ generate/copy needed deployment products
 → replace updated maps
 → retire obsolete maps when instructed
 → verify
@@ -87,16 +152,18 @@ find Map Fountain
 
 Changing map inventory must not require GIS-specific router configuration.
 
-## Performance baseline
+---
 
-### Ethernet storage benchmark
+# Performance baseline — Windows SMB path
+
+### Ethernet
 
 - random: **25.33 MiB/s**
 - random p95: **9.98 ms**
 - four-client aggregate: **51.21 MiB/s**
 - sequential: **42.58 MiB/s**
 
-### Wi-Fi storage benchmark
+### Wi-Fi
 
 - random: **5.19 MiB/s**
 - random p95: **50.56 ms**
@@ -105,27 +172,22 @@ Changing map inventory must not require GIS-specific router configuration.
 
 The synthetic benchmark is a diagnostic baseline, not a substitute for ArcGIS Earth behavior.
 
-## Public documentation / history
+---
 
-- keep the canonical Factory / PC / Android router-only flowchart at the top of all three active repositories;
-- preserve the 2026-08-17 benchmark numbers and evidence hashes;
-- preserve the successful ArcGIS Earth Wi-Fi proof as the primary Map Fountain milestone;
-- retain the 2026-08-16 Windows-hosted WMTS work as development history, not the current field architecture;
-- use **Map Fountain** as the current product name;
-- use the historical `MAP_TANK_FIRST_BENCH...` name only when referring to that exact benchmark artifact;
-- do not claim a worldwide first without stronger historical evidence;
-- accurately state that the documented prior-art search did not find a published implementation matching the exact proven router + Samba + ArcGIS Earth + native TPKX chain.
-
-## Non-goals
+# Non-goals
 
 - turning the consumer router into a GIS computer;
-- requiring a field GIS server process for the proven desktop TPKX path;
+- requiring a field GIS server process;
 - requiring public Internet;
 - adding cloud accounts or portals to the core path;
-- making operators administer network internals unnecessarily;
-- rewriting proven map-manufacturing components without a verified defect;
-- optimizing a guessed bottleneck.
+- requiring Python or third-party helper apps on Android;
+- turning expanded WMTS trees into the canonical compact archive format;
+- making operators copy millions of files unnecessarily;
+- optimizing a guessed bottleneck;
+- rewriting proven Windows TPKX delivery without a verified defect.
+
+---
 
 ## Governing rule
 
-> **Keep the router dumb. Keep the maps native. Let ArcGIS Earth do the GIS work.**
+> **Keep the router dumb. Keep the masters compact. Expand only the product the Android client actually needs.**
