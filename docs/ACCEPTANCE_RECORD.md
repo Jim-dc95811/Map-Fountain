@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Router-only Map Fountain — 2026-08-17
+## 1. Router-only Map Fountain / Windows ArcGIS Earth — 2026-08-17
 
 **Status: LIVE-PROVEN**
 
@@ -48,7 +48,47 @@ No field GIS server process was required for this proven TPKX path.
 
 ---
 
-## 2. Large-file Ethernet storage baseline — 2026-08-17
+## 2. Router-only Map Fountain / Android ArcGIS Earth Mobile — 2026-08-17
+
+**Status: LIVE-PROVEN**
+
+Accepted delivery flavor:
+
+> **Static REST WMTS**
+
+Proven chain:
+
+```text
+Static REST WMTS folder
+→ USB SSD
+→ Flint 2
+→ local HTTPS/WebDAV file endpoint
+→ Wi-Fi
+→ Android
+→ ArcGIS Earth Mobile
+```
+
+Acceptance observations:
+
+- Android reached the Flint local HTTPS endpoint.
+- Direct request of an actual SSD-hosted file succeeded.
+- Direct request of the fixture `WMTSCapabilities.xml` succeeded.
+- ArcGIS Earth Mobile accepted that capabilities URL and rendered the raster map.
+- The Android ArcGIS Earth app cache was cleared.
+- ArcGIS Earth was force-stopped/reopened.
+- The same router-hosted Static REST WMTS map rendered again.
+
+The accepted runtime requires no Python on Android, no third-party Android helper application, no QGIS Server, no Windows map server, and no Raspberry Pi.
+
+Operational observation: deliberate pan/zoom worked. Rapid gestures could cause stalls or erratic display behavior. This remains a performance-characterization item, not an acceptance failure.
+
+Detailed record:
+
+- `docs/STATIC_REST_WMTS_ANDROID_ACCEPTANCE_2026-08-17.md`
+
+---
+
+## 3. Large-file Ethernet storage baseline — 2026-08-17
 
 **Status: LIVE-PROVEN**
 
@@ -69,7 +109,7 @@ The random phase ran first specifically to reduce cache contamination after the 
 
 ---
 
-## 3. Same large file over Wi-Fi — 2026-08-17
+## 4. Same large file over Wi-Fi — 2026-08-17
 
 **Status: LIVE-PROVEN**
 
@@ -87,13 +127,42 @@ Results:
 - sequential sample: 6.14 MiB/s
 - sequential 536,870,912-byte logical sample: 83.440 s
 
-Wi-Fi was much slower but completed normally. During the long sequential phase the operator observed sustained Wireshark activity; the benchmark later reported BENCH COMPLETE.
-
-The Wi-Fi packet capture began shortly after the benchmark started, so the console output is the authority for the early random/four-client results.
+Wi-Fi was much slower but completed normally.
 
 ---
 
-## 4. Evidence fingerprints
+## 5. Static REST WMTS fixture self-test — 2026-08-17
+
+**Status: BUILT / SELF-TESTED, THEN LIVE-PROVEN ON ANDROID**
+
+Source:
+
+```text
+small test 8_17_26 mbtile.mbtiles
+```
+
+Observed properties:
+
+- 31,064,064 bytes
+- bounds `-81.9384,30.3916,-81.9336,30.3946`
+- Z0-Z20
+- 261 PNG tiles
+
+Converter/self-test results:
+
+- every exported raster tile byte-identical to the MBTiles tile payload: PASS
+- MBTiles/TMS row to WMTS top-origin row conversion: PASS
+- capabilities XML parse: PASS
+- `TileMatrix / TileRow / TileCol` REST path generation: PASS
+- `WorldWebMercatorQuad` matrix definition: PASS
+- advertised matrix limits matched actual files: PASS
+- Z20 geographic-center tile check: PASS
+
+The resulting Static REST WMTS folder then passed the real ArcGIS Earth Mobile test described above.
+
+---
+
+## 6. Evidence fingerprints — Windows router proof
 
 Original local acceptance artifacts are identified by SHA-256:
 
@@ -118,59 +187,53 @@ The packet captures are large bench artifacts and are not stored in the public r
 
 ---
 
-## 5. Historical Windows WMTS proof — 2026-08-16
+## 7. Historical Windows WMTS proof — 2026-08-16
 
 **Status: LIVE-PROVEN HISTORICAL PRECURSOR**
 
-Before the router-only breakthrough, a Windows-hosted Map Fountain implementation proved:
+Before the router-only Android breakthrough, a Windows-hosted Map Fountain implementation proved:
 
 ```text
 raster MBTiles
-→ local HTTPS WMTS
+→ local HTTPS WMTS server
 → Android USB tether
 → ArcGIS Earth Mobile
 ```
 
-Observed proof included:
+That work proved local/offline mobile tile delivery, HTTPS, QR loading, and mobile cache behavior. It remains engineering history, not the current field appliance.
 
-- local PC-to-phone networking;
-- ArcGIS Earth Mobile requesting real WMTS tiles;
-- HTTPS transport;
-- QR loading;
-- operation with outside Internet removed;
-- multiple substantial MBTiles;
-- a large Lago panorama displaying smoothly under deliberate navigation.
-
-That work remains part of the engineering lineage, but the current field-appliance direction is router-only.
+The 2026-08-17 Static REST WMTS path removed the active field WMTS server by manufacturing the WMTS resources ahead of time and storing them directly on the router SSD.
 
 ---
 
-## 6. Prior-art boundary recorded 2026-08-17
+## 8. Prior-art boundary recorded 2026-08-17
 
 A targeted search found prior art for the individual components and adjacent architectures, including router Samba storage, GIS network-share access, TPKX network-file optimization, NAS-based geospatial storage, and active tile servers.
-
-The search did **not** find a published implementation matching the exact proven chain:
-
-```text
-consumer router + USB SSD
-→ Samba
-→ Wi-Fi
-→ ArcGIS Earth
-→ large native TPKX rendered in place
-```
 
 This record does not claim a mathematically established worldwide first. It records independent development plus the result of the documented prior-art search.
 
 ---
 
-## Current accepted statement
+## Current accepted statements
 
-> **Map Fountain is LIVE-PROVEN as a router-only offline field map appliance in which a GL.iNet Flint 2 exposes a USB-SSD native TPKX through Samba and ArcGIS Earth opens and renders that package directly over Wi-Fi.**
+> **Windows:** Map Fountain is LIVE-PROVEN as a router-only offline field map appliance in which a GL.iNet Flint 2 exposes a USB-SSD native TPKX through Samba and ArcGIS Earth opens and renders that package directly over Wi-Fi.
 
-## Immediate next acceptance gate
+> **Android:** Map Fountain is LIVE-PROVEN using a serverless Static REST WMTS package stored as ordinary files on the Flint 2 USB SSD and consumed by ArcGIS Earth Mobile over the router's local HTTPS endpoint.
 
-**ArcGIS Earth Mobile on the same router-only architecture.**
+---
 
-The mobile client must earn its own acceptance. Do not revive an active field GIS-server appliance by default; start with the simplest router-hosted path the real Android client can consume.
+## Immediate next engineering gates
 
-After Android, continue with the Windows Ethernet application comparison, cold/reconnect behavior, and controlled multi-Eater testing.
+Android consumption is no longer the next acceptance gate. It has passed.
+
+Next work should focus on:
+
+1. production Factory handling of large Static REST WMTS directory trees;
+2. short map/service IDs and automatic QR generation;
+3. tile-count / payload / free-space preflight;
+4. direct-to-deployment-SSD output to avoid a second millions-of-files copy step;
+5. larger and denser Android map tests;
+6. deliberate-versus-rapid mobile navigation characterization;
+7. cold close/reopen and Wi-Fi reconnect behavior;
+8. multiple simultaneous Eaters;
+9. Windows Ethernet application comparison.
