@@ -37,8 +37,70 @@ The current live-proven implementation is **`Rasta USB Map Fountain v0.2.1 TEST`
 | Unique per-map service identity / cache isolation | ✅ **LIVE-PROVEN** |
 | Three different substantial MBTiles displayed on Android | ✅ **LIVE-PROVEN** |
 | Large Lago panorama displayed smoothly on Android | ✅ **LIVE-PROVEN** |
-| Wi-Fi transport | **DESIGNED / NOT YET LIVE-PROVEN** |
+| Map Tank — consumer router + USB SSD | 🟡 **DESIGNED / BENCH TEST PENDING** |
+| Flint 2 GL-MT6000 test hardware | ✅ **RECEIVED / DATA PATH NOT YET PROVEN** |
+| Wi-Fi Map Tank transport | 🟡 **DESIGNED / NOT YET LIVE-PROVEN** |
 | Automatic consumer-grade HTTPS certificate lifecycle | **NOT YET FINISHED** |
+
+---
+
+## Map Tank — consumer router + USB SSD
+
+**Status: DESIGNED / BENCH TEST PENDING — 2026-08-17**
+
+Map Tank is a new Map Fountain deployment experiment built around a deliberately simple appliance:
+
+```text
+USB SSD full of finished map products
+        ↓
+consumer router
+        ↓
+private local network
+        ↓
+ArcGIS Earth clients
+```
+
+The first physical test router is a **GL.iNet Flint 2 (GL-MT6000)**. The hardware has arrived, but no Map Tank data path is called live-proven until controlled bench evidence is captured.
+
+The design rule is simple:
+
+> **Keep the router dumb.**
+
+A new map should be able to appear by adding a finished file to the SSD. A completely different library should be able to appear by swapping in another preloaded SSD. The router should not require GIS-specific reconfiguration when the map inventory changes.
+
+### Feeder / Eater model
+
+Field clients are **Eaters**: laptops, phones, or tablets that consume maps read-only.
+
+At basecamp, a **Feeder** maintains the Map Tank library by discovering the tank, comparing the approved master library against the SSD, adding new maps, replacing updated maps, retiring obsolete maps where appropriate, and verifying the result.
+
+```text
+BASECAMP
+approved master map library
+        ↓
+Map Tank Feeder
+        ↓
+router + USB SSD
+        ↓
+MAP TANK CURRENT
+
+FIELD
+router + USB SSD
+        ↓
+private local network
+        ↓
+Eaters: ArcGIS Earth PC / Mobile
+```
+
+The first acceptance sequence deliberately begins with **Ethernet**, not Wi-Fi, so the radio is removed as a variable. The planned order is:
+
+1. Ethernet storage baseline with Wireshark.
+2. ArcGIS Earth PC opening a known-good TPKX from the router-hosted SSD if the share path is accepted.
+3. Repeat the same test over Wi-Fi with no other major changes.
+4. Simulated mobile/tile consumption on Windows if useful.
+5. ArcGIS Earth Mobile experiments only after the storage/network behavior is understood.
+
+See **[Map Tank test plan — 2026-08-17](docs/MAP_TANK_TEST_PLAN_2026-08-17.md)**.
 
 ---
 
@@ -150,8 +212,11 @@ The repository carries the source of **v0.2.1 TEST**, the build that was live-pr
 
 Important current limitation: the bench build used temporary HTTPS certificate material tied to the observed USB-tether PC address **`10.13.166.115`**. The private server key used during that live test is **not published in this public repository**.
 
+Map Tank is a parallel experimental deployment branch. It has **not** replaced the v0.2.1 Windows/USB proof and it is **not** yet a proven production path.
+
 See:
 
+- [`docs/MAP_TANK_TEST_PLAN_2026-08-17.md`](docs/MAP_TANK_TEST_PLAN_2026-08-17.md)
 - [`docs/PROJECT_STATUS_2026-08-16.md`](docs/PROJECT_STATUS_2026-08-16.md)
 - [`docs/OPERATOR_WORKFLOW.md`](docs/OPERATOR_WORKFLOW.md)
 - [`docs/TECHNICAL_ARCHITECTURE.md`](docs/TECHNICAL_ARCHITECTURE.md)
