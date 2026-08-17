@@ -1,27 +1,29 @@
 # Map Fountain — Recommended GitHub Metadata
 
-The connected GitHub tool used to build this repository does not expose repository About/description/topic editing.
-
-Recommended public metadata:
-
 ## Description
 
-`Offline MBTiles delivery over local HTTPS WMTS to ArcGIS Earth Mobile. USB today, Wi-Fi next.`
+`Router-only offline map delivery for ArcGIS Earth: USB SSD + consumer router + Samba + Wi-Fi/Ethernet + native TPKX.`
 
 ## Topics
 
 - `gis`
-- `mbtiles`
-- `wmts`
 - `arcgis-earth`
 - `offline-maps`
-- `android`
-- `usb-tethering`
-- `raster-tiles`
-- `python`
+- `tpkx`
+- `samba`
+- `smb`
+- `wifi`
+- `network-storage`
+- `router`
 - `geospatial`
 - `local-first`
 - `field-operations`
+
+## Current status
+
+Windows ArcGIS Earth direct network-hosted TPKX over Wi-Fi: **LIVE-PROVEN**.
+
+ArcGIS Earth Mobile on the router-only architecture: **NEXT ACCEPTANCE GATE**.
 
 ## Website
 
