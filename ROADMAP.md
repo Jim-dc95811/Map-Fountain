@@ -2,238 +2,143 @@
 
 ## Current state
 
-**v0.2.1 TEST is LIVE-PROVEN** on the 2026-08-16 Windows/Android target for:
+**Router-only Map Fountain is LIVE-PROVEN on the 2026-08-17 Windows / ArcGIS Earth target.**
 
-- raster MBTiles selected from a Windows PC / attached SSD;
-- HTTPS WMTS service over Android USB tether / Remote NDIS;
-- ArcGIS Earth Mobile QR ingestion;
-- multiple substantial MBTiles;
-- operation with outside Internet removed.
-
-That proof remains intact.
-
-A new deployment branch, **Map Tank**, is now **DESIGNED / BENCH TEST PENDING**. It asks whether a consumer router + USB SSD can replace much of the active server hardware/software while preserving practical offline map delivery.
-
-The first physical test router is a **GL.iNet Flint 2 (GL-MT6000)**, received on 2026-08-17.
-
-See [`docs/MAP_TANK_TEST_PLAN_2026-08-17.md`](docs/MAP_TANK_TEST_PLAN_2026-08-17.md).
-
-## Immediate gates — Map Tank
-
-### 1. Ethernet storage baseline
-
-**Status: first physical gate**
-
-Remove Wi-Fi as a variable.
+Proven chain:
 
 ```text
-Windows laptop
-    ↓ Ethernet
-Flint 2
-    ↓ USB 3
-SSD
+USB SSD
+→ GL.iNet Flint 2
+→ Samba / SMB
+→ Ethernet or Wi-Fi
+→ Windows
+→ ArcGIS Earth
+→ native network-hosted TPKX
 ```
 
-Use DHCP. Expose a known-good TPKX through the router's normal storage-sharing interface and capture the entire session in Wireshark.
+The production-scale `ESG1N.tpkx` package was benchmarked through the router over Ethernet and Wi-Fi, then opened directly from the router share and rendered interactively in ArcGIS Earth over Wi-Fi.
 
-Measure/inspect:
+The field architecture is now **router only**. The router remains intentionally dumb: storage, DHCP/local networking, and file sharing. ArcGIS Earth remains the GIS runtime.
 
-- file-open behavior;
-- read sizes and access pattern;
-- sequential versus random reads;
-- throughput;
+See:
+
+- [`README.md`](README.md)
+- [`docs/MAP_TANK_TEST_PLAN_2026-08-17.md`](docs/MAP_TANK_TEST_PLAN_2026-08-17.md)
+- [`docs/ACCEPTANCE_RECORD.md`](docs/ACCEPTANCE_RECORD.md)
+- [`docs/map_fountain_router_architecture_2026-08-17.svg`](docs/map_fountain_router_architecture_2026-08-17.svg)
+
+## Immediate gates
+
+### 1. ArcGIS Earth Ethernet comparison
+
+**Status: next controlled application gate**
+
+Repeat the successful ArcGIS Earth / `ESG1N.tpkx` direct-network test over Ethernet while changing no other major variable.
+
+Compare:
+
+- initial package open behavior;
+- time to first useful display;
+- pan/zoom responsiveness;
+- SMB/TCP byte flow;
 - retries/retransmissions;
-- caching;
-- ArcGIS Earth behavior when opening the network-hosted TPKX if the share path is accepted.
+- Windows caching/read-ahead behavior.
 
-No Map Tank path becomes LIVE-PROVEN until this or a later real-target gate succeeds.
+### 2. Wi-Fi ArcGIS Earth navigation characterization
 
-### 2. Wi-Fi comparison
+**Status: LIVE-PROVEN basic operation; deeper characterization pending**
 
-After the Ethernet baseline, change one major variable only:
+The map rendered successfully over Wi-Fi. Next, measure real operator patterns rather than synthetic storage loads:
 
-```text
-Ethernet → Wi-Fi
-```
-
-Repeat the same TPKX/storage test and compare packet evidence against the Ethernet run.
-
-### 3. Simulated mobile consumption on Windows
-
-If useful, exercise the router/SSD path with a deterministic client before Android.
-
-Profiles may include:
-
-- normal neighboring-tile requests;
-- steady pan;
-- progressive deep zoom / hawk dive;
-- rapid random navigation stress.
-
-The purpose is not to imitate Android rendering. It is to isolate whether the storage/network path can supply map objects fast enough.
-
-### 4. ArcGIS Earth Mobile Map Tank path
-
-Candidate configurations, in preferred investigation order:
-
-1. **Static WMTS directly from router storage** — capabilities XML + raster tile tree, no active GIS server process.
-2. **Router storage + thin Android bridge** — only if compatibility logic proves necessary.
-3. **Whole-file TPKX transfer/open** — simple package fallback.
-4. **PMTiles / byte-range bridge** — fallback if remote SQLite/MBTiles access is awkward.
-
-These are experimental directions, not current product claims.
-
-## Feeder / Eater workflow
-
-### Eaters
-
-Field clients consume the Map Tank read-only where practical.
-
-Potential Eaters:
-
-- ArcGIS Earth Windows laptops;
-- ArcGIS Earth Mobile phones/tablets;
-- multiple simultaneous clients.
-
-### Feeder
-
-At basecamp, a Feeder client should eventually:
-
-- self-discover the Map Tank;
-- scan the current SSD inventory;
-- compare against an approved master library;
-- copy new products;
-- replace updated products;
-- retire obsolete products where appropriate;
-- verify completion;
-- report `MAP TANK CURRENT`.
-
-Changing the map library should not require router reconfiguration. Operators should be able to add a finished map file or swap in a different preloaded SSD.
-
-## Existing Windows Map Fountain gates
-
-The Windows/USB-tether path remains a valid proven branch and may continue in parallel.
-
-### General HTTPS certificate / tether-IP handling
-
-The live v0.2.1 bench build used certificate material tied to the observed PC-side USB-tether address `10.13.166.115`.
-
-If the Windows Map Fountain branch is productized further, remove that fixed-address dependency without requiring operators to become certificate administrators.
-
-Requirements:
-
-- detect the current USB-tether IP automatically;
-- create or select matching local HTTPS identity safely;
-- preserve Android trust in a predictable way;
-- never commit private keys to GitHub;
-- remain fully operable without public Internet access.
-
-### Cold restart / reconnect acceptance
-
-Test deliberately:
-
-```text
-phone disconnect
-server stop
-PC restart if useful
-phone reconnect
-USB tether ON
-Map Fountain start
-scan/add service
-map returns
-```
-
-Record exactly what Android/ArcGIS Earth Mobile remembers versus what must be re-added.
-
-### Larger geographic MBTiles stress test
-
-The mobile path is already proven on multiple substantial MBTiles and the Lago raster panorama.
-
-Next stress gate should use a large real geographic MBTiles and test:
-
-- deliberate deep zoom;
-- long pan across the map;
+- deliberate pan;
+- progressive deep zoom;
 - return to overview;
-- repeated map switching;
-- runtime stability over an extended session.
+- long traverse across package coverage;
+- repeated close/reopen;
+- reconnect after leaving/rejoining Wi-Fi.
 
-### Mobile navigation envelope
+Do not optimize the network path unless the real viewer exposes an actual problem.
 
-Current live rule:
+### 3. Multiple Eaters
 
-> deliberate navigation is smooth; rapid repeated pan/zoom can outrun the current path.
+**Status: not yet accepted**
 
-Future work may measure whether the limiting factor is:
+Test two or more clients against the same router-attached SSD.
 
-- Android rendering;
-- ArcGIS Earth Mobile request behavior;
-- USB-tether throughput;
-- SQLite open/query overhead;
-- Python request handling;
-- tile cache behavior.
+Questions:
 
-Do not optimize blindly until live measurements identify the bottleneck.
+- Does one ArcGIS Earth client materially degrade another?
+- Does Samba remain stable under simultaneous reads?
+- What does the SSD/router path do with independent random reads?
+- Is the practical field limit the router, storage device, radio channel, or client behavior?
 
-### Reuse SQLite connections / bounded server optimization
+Do not market multi-client behavior until measured.
 
-Current server opens the MBTiles SQLite database read-only for each tile request. That kept the first implementation simple and safe.
+### 4. Feeder workflow
 
-Potential optimization:
+**Status: designed**
 
-- per-thread or pooled read-only SQLite connections;
-- bounded memory cache for recent tile bytes;
-- request timing/status instrumentation.
+Create a basecamp-side maintenance tool that can:
 
-Only change this after a reproducible performance need is established.
+```text
+find Map Fountain
+→ inspect SSD inventory
+→ compare with approved master library
+→ copy new maps
+→ replace updated maps
+→ retire obsolete maps when instructed
+→ verify
+→ MAP FOUNTAIN CURRENT
+```
 
-## Map library / multi-map workflow
+Changing map inventory must not require GIS-specific router configuration.
 
-Current v0.2.1 serves one selected MBTiles at a time.
+### 5. ArcGIS Earth Mobile router-only path
 
-Possible future UI:
+**Status: future gate**
 
-- map library list;
-- current-map switch without relaunching the GUI;
-- map identity shown clearly;
-- optional multiple WMTS layers served concurrently;
-- QR/service index page for available maps.
+Desktop direct-TPKX-over-Samba is proven. Mobile still needs its own real-target acceptance.
 
-Map Tank may simplify this by making the SSD itself the persistent library while client software discovers the available finished products.
+Investigate the simplest router-only delivery forms first. Do not add a field GIS server process merely to recreate a capability that the client can obtain more simply.
 
-Do not make the beginner workflow complex merely because multi-map serving is technically possible.
+## Performance baseline
 
-## Viewer expansion
+### Ethernet storage benchmark
 
-ArcGIS Earth Mobile is the current live acceptance viewer.
+- random: 25.33 MiB/s
+- random p95: 9.98 ms
+- four-client aggregate: 51.21 MiB/s
+- sequential: 42.58 MiB/s
 
-Later tests may include other standards-compatible WMTS clients, but Map Fountain should not compromise the proven ArcGIS Earth Mobile path merely to claim broad compatibility.
+### Wi-Fi storage benchmark
 
-## Packaging
+- random: 5.19 MiB/s
+- random p95: 50.56 ms
+- four-client aggregate: 5.31 MiB/s
+- sequential: 6.14 MiB/s
 
-For the Windows Map Fountain branch, after certificate/IP lifecycle is solved and cold restart is proven:
+The synthetic benchmark is a diagnostic baseline, not a substitute for ArcGIS Earth behavior.
 
-- package as a normal Windows operator tool;
-- minimize external dependencies;
-- preserve no-install / no-public-Internet operation where practical;
-- document Windows firewall behavior;
-- create a clean acceptance package and versioned release.
+## Public documentation / history
 
-For Map Tank, productization should wait until the bit flow and real ArcGIS Earth behavior are measured.
+- preserve the 2026-08-17 benchmark numbers and evidence hashes;
+- keep the router-only architecture drawing at the top of the active repositories;
+- publish the successful ArcGIS Earth Wi-Fi proof as the primary Map Fountain milestone;
+- retain earlier Windows-hosted WMTS work as development history, not the current field architecture;
+- avoid claiming a worldwide first unless stronger historical evidence supports it;
+- accurately state that the documented prior-art search did not find a published implementation matching the exact proven router + Samba + ArcGIS Earth + native TPKX chain.
 
 ## Non-goals
 
-- becoming a full GIS server;
-- adding accounts/cloud dependencies;
-- requiring an ArcGIS Portal for the core local path;
-- copying an entire large map to the phone when live local tile delivery is the objective;
-- inventing a proprietary mobile viewer;
-- pretending rapid-navigation limits are solved before they are measured;
-- publishing private TLS keys;
-- turning the consumer router into a complicated GIS computer.
+- turning the consumer router into a GIS computer;
+- requiring a field GIS server process for the proven desktop TPKX path;
+- requiring public Internet;
+- adding cloud accounts or portals to the core path;
+- making operators administer network internals unnecessarily;
+- copying entire map libraries onto every client when direct local consumption works;
+- rewriting proven map-manufacturing components without a verified defect;
+- optimizing a guessed bottleneck.
 
 ## Governing rule
 
-> **Keep the server dumb, local, and predictable. Let the viewer ask for what it needs.**
-
-For Map Tank:
-
-> **At basecamp, feed the tank. In the field, drink from it.**
+> **Keep the router dumb. Keep the maps native. Let ArcGIS Earth do the GIS work.**
