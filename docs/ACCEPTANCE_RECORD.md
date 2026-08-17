@@ -52,7 +52,7 @@ No field GIS server process was required for this proven TPKX path.
 
 **Status: LIVE-PROVEN**
 
-Map Tank First Bench v0.1.1 TEST ran against the same `ESG1N.tpkx` through Ethernet.
+The historical benchmark artifact `MAP_TANK_FIRST_BENCH_v0_1_1_TEST` ran against the same `ESG1N.tpkx` through Ethernet.
 
 Results:
 
@@ -167,4 +167,10 @@ This record does not claim a mathematically established worldwide first. It reco
 
 > **Map Fountain is LIVE-PROVEN as a router-only offline field map appliance in which a GL.iNet Flint 2 exposes a USB-SSD native TPKX through Samba and ArcGIS Earth opens and renders that package directly over Wi-Fi.**
 
-The next acceptance gates are the ArcGIS Earth Ethernet comparison, cold/reconnect behavior, multiple Eaters, and a separate router-only mobile path.
+## Immediate next acceptance gate
+
+**ArcGIS Earth Mobile on the same router-only architecture.**
+
+The mobile client must earn its own acceptance. Do not revive an active field GIS-server appliance by default; start with the simplest router-hosted path the real Android client can consume.
+
+After Android, continue with the Windows Ethernet application comparison, cold/reconnect behavior, and controlled multi-Eater testing.
