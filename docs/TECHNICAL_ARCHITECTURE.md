@@ -2,294 +2,314 @@
 
 ## Purpose
 
-Map Fountain serves an existing raster MBTiles pyramid over a private local network using a small HTTPS WMTS service so ArcGIS Earth Mobile can request only the tiles needed for the current view.
+Map Fountain is a router-only offline map-delivery architecture for ArcGIS Earth.
 
-It is a delivery system, not a renderer.
+The current live-proven Windows/TPKX path is deliberately simple:
 
 ```text
-QGIS / Rasta / other raster producer
+finished native TPKX
         ↓
-standard raster MBTiles
+USB SSD
         ↓
-Map Fountain
+GL.iNet Flint 2
         ↓
-HTTPS WMTS
+Samba / SMB
         ↓
-private transport
+private Ethernet or Wi-Fi
         ↓
-ArcGIS Earth Mobile
+Windows
+        ↓
+ArcGIS Earth
 ```
 
-The current live-proven transport is Android USB tether / Windows Remote NDIS.
+It is a delivery architecture, not a renderer.
+
+The router does not parse TPKX, understand GIS, generate tiles, or run map-rendering software. It exposes storage over the local network. ArcGIS Earth reads the native file through Windows SMB and performs the GIS work.
 
 ---
 
-## 1. Runtime components
+## 1. Field runtime components
 
-Current v0.2.1 TEST source consists primarily of:
+Current proven field components:
 
-- `Map_Fountain_GUI.py` — Windows operator GUI and server process control;
-- `Map_Fountain_Server.py` — MBTiles reader, WMTS capabilities generator, tile service, tether detection, HTTPS listener, QR generation;
-- `START MAP FOUNTAIN.bat` — Windows launcher.
+- GL.iNet Flint 2 (`GL-MT6000`);
+- USB-attached SSD;
+- stock Samba network-storage feature;
+- private Ethernet/Wi-Fi LAN;
+- Windows client using DHCP;
+- ArcGIS Earth;
+- finished native `.tpkx` map products.
 
-The current source was established known-good with Python 3.14.5.
-
-The live packaged test vendored `python-qrcode` 8.2 so QR generation required no Internet/pip install at runtime. The public source repo records that dependency in `requirements.txt` rather than committing the entire vendored library tree.
+No field GIS server process is required for the proven desktop TPKX path.
 
 ---
 
-## 2. MBTiles expectations
+## 2. Network share
 
-The current server expects a standard raster MBTiles database containing:
+The live test used the router LAN address:
 
 ```text
-metadata(name, value)
-tiles(
-    zoom_level,
-    tile_column,
-    tile_row,
-    tile_data
-)
+192.168.8.1
 ```
 
-Required `tiles` fields:
-
-- `zoom_level`
-- `tile_column`
-- `tile_row`
-- `tile_data`
-
-The server opens the database read-only.
-
-Current accepted raster tile payloads:
-
-- PNG
-- JPEG
-
-Vector/PBF MBTiles are not supported by the current path.
-
----
-
-## 3. TMS → XYZ/WMTS row conversion
-
-Raster MBTiles commonly stores tile rows in TMS bottom-origin order.
-
-WMTS/XYZ client requests use top-origin rows.
-
-For zoom `z` and requested top-origin row `y`:
+The tested share path was:
 
 ```text
-tms_y = (2^z - 1) - y
+\\192.168.8.1\New TPKX
 ```
 
-The requested tile is then read from SQLite using:
+The production-scale test file was:
 
 ```text
-zoom_level = z
-tile_column = x
-tile_row = tms_y
+\\192.168.8.1\New TPKX\Esri and Label\ESG1N.tpkx
 ```
 
-The raster bytes are returned directly. Map Fountain does not resample or redraw them.
+The benchmark script opened the network path read-only.
 
 ---
 
-## 4. WMTS profile
+## 3. Native TPKX behavior
 
-The current service advertises:
+The map remains a normal native TPKX package on the SSD.
 
-- WMTS 1.0.0-style capabilities;
-- tile matrix set identifier: `GoogleMapsCompatible`;
-- supported CRS: `urn:ogc:def:crs:EPSG::3857`;
-- tile width: 256;
-- tile height: 256;
-- standard Web Mercator top-left origin;
-- scale denominator derived from the standard Web Mercator resolution sequence and OGC pixel size.
+The router does not unpack or transform it.
 
-The current implementation is intentionally narrow because the live target is ArcGIS Earth Mobile consuming QGIS/Rasta-style Web Mercator raster MBTiles.
+ArcGIS Earth opens the network-hosted file through the same user-facing file workflow used for ordinary local files. Windows/SMB handles file access; ArcGIS Earth selectively reads the package content required for display/navigation.
 
----
-
-## 5. Service URLs
-
-ArcGIS Earth Mobile first consumes a GetCapabilities URL such as:
+This separation is the central design insight:
 
 ```text
-https://<pc-usb-ip>:8443/wmts?SERVICE=WMTS&REQUEST=GetCapabilities&MAP=<map-id>
+Factory knows how to manufacture the map.
+Router knows how to share a file.
+ArcGIS Earth knows how to render the map.
 ```
 
-The capabilities document advertises REST tile URLs shaped like:
+No component is forced to imitate another.
+
+---
+
+## 4. Storage benchmark design
+
+The first small-file benchmark proved connectivity but exposed a measurement problem: the small package fit easily into Windows cache, causing later random-read measurements to report impossible router speeds.
+
+Map Tank First Bench v0.1.1 TEST therefore changed the large-file order to:
 
 ```text
-/wmts/tiles/<map-id>/GoogleMapsCompatible/{TileMatrix}/{TileRow}/{TileCol}.png
+1. random seek
+2. four-client random read
+3. sequential sample
 ```
 
-or `.jpg` for JPEG tile payloads.
+The goal was to obtain the most useful random-access measurement before sequential access and read-ahead could preload large portions of the package.
+
+The benchmark is read-only.
 
 ---
 
-## 6. Unique per-map identity
+## 5. Ethernet large-file baseline
 
-This was the critical v0.2.1 fix.
-
-v0.2.0 changed the selected MBTiles but reused one layer identity and one set of tile URLs. ArcGIS Earth Mobile could therefore reuse cached content from the previous map.
-
-v0.2.1 computes a service ID from:
+Specimen:
 
 ```text
-resolved file path
-file size
-file modification time (nanoseconds)
+ESG1N.tpkx
+26,174,899,216 bytes
 ```
 
-Those values are hashed with SHA-256 and the first 16 hexadecimal characters become the map/service token.
-
-That token appears in:
-
-- the WMTS service title;
-- layer identifier;
-- GetCapabilities URL query;
-- REST tile URL path.
-
-The result is simple: **a newly selected MBTiles looks like a different service to the mobile client.**
-
-During the test phase the server also sends no-cache response headers.
-
----
-
-## 7. USB tether discovery
-
-The Windows proof used Android USB tethering, which appeared as:
-
-`Remote NDIS based Internet Sharing Device #2`
-
-The current server runs a bounded PowerShell query that:
-
-1. enumerates active Windows network adapters;
-2. selects adapters whose InterfaceDescription contains `Remote NDIS`;
-3. reads their IPv4 addresses;
-4. ignores `169.254.*` link-local fallback addresses.
-
-The first detected tether adapter/address becomes the service address.
-
-This replaced an earlier bad approach that printed several PC addresses and required guessing which one belonged to the phone.
-
----
-
-## 8. HTTPS
-
-ArcGIS Earth Mobile successfully consumed the local WMTS over HTTPS during the live proof.
-
-Current v0.2.1 bench behavior:
-
-- TLS server uses Python `ssl.SSLContext`;
-- minimum TLS version is TLS 1.2;
-- server listens on port 8443;
-- certificate/key are loaded from `HTTPS CERT/`;
-- the accepted bench certificate was generated for PC tether address `10.13.166.115`.
-
-This is the largest current productization gap.
-
-The public repository does not contain the private server key from the live test.
-
-See `HTTPS_CERTIFICATE_NOTE.md`.
-
----
-
-## 9. QR generation
-
-The server writes:
-
-- `CURRENT_PHONE_TEST_URL.txt`
-- `CURRENT_WMTS_URL.txt`
-- `CURRENT_WMTS_QR.svg`
-- `CURRENT_WMTS_QR.html`
-
-The GUI enables **OPEN QR** after the server creates a live WMTS URL.
-
-The operator can then use:
+Observed Ethernet results:
 
 ```text
-ArcGIS Earth Mobile
-→ Add Data
-→ QR Code
-→ scan PC screen
+Random seek
+400 requests
+104,857,600 bytes
+3.948 s
+25.33 MiB/s
+avg 9.34 ms
+median 9.42 ms
+p95 9.98 ms
+max 16.17 ms
+
+Four-client random read
+4 workers
+400 requests
+104,857,600 bytes
+1.953 s
+51.21 MiB/s aggregate
+avg 18.51 ms
+median 18.68 ms
+p95 21.43 ms
+max 38.52 ms
+
+Sequential sample
+536,870,912 bytes
+12.024 s
+42.58 MiB/s
 ```
 
-This replaced repeated manual entry of the long service URL.
+Later phases reflect the behavior of the complete Windows + SMB + cache/read-ahead + router + SSD path and should not be mislabeled as raw router wire speed.
 
 ---
 
-## 10. Threading / server model
+## 6. Wi-Fi large-file baseline
 
-The current HTTP service uses Python `ThreadingHTTPServer` with daemon request threads.
-
-Each tile request currently opens the MBTiles SQLite database read-only, retrieves one tile, and closes the connection.
-
-That is deliberately simple and safe for the first working architecture.
-
-Potential future optimization includes persistent per-thread connections or a bounded connection pool, but only after measurement establishes that SQLite open/query overhead is a real bottleneck.
-
----
-
-## 11. Current performance observation
-
-The server successfully delivered multiple substantial MBTiles, including a large Lago panorama, to ArcGIS Earth Mobile.
-
-Live operator result:
-
-- steady deliberate pan/zoom: smooth;
-- rapid repeated navigation: can outrun the current path.
-
-No single bottleneck has yet been isolated.
-
-Potential contributors include:
-
-- ArcGIS Earth Mobile request scheduling;
-- Android rendering;
-- USB-tether throughput;
-- Python request concurrency;
-- per-request SQLite open/query cost;
-- mobile-side cache behavior.
-
-Do not optimize a guessed bottleneck.
-
----
-
-## 12. Offline boundary
-
-Map Fountain’s core map path does not require the public Internet.
-
-The tested chain is:
+Same file. Same router. Same SSD. Same benchmark. Major variable changed: Ethernet → Wi-Fi.
 
 ```text
-local Windows storage
-→ local Python service
-→ local USB network
-→ local Android viewer
+Random seek
+400 requests
+104,857,600 bytes
+19.273 s
+5.19 MiB/s
+avg 46.36 ms
+median 45.42 ms
+p95 50.56 ms
+max 66.71 ms
+
+Four-client random read
+4 workers
+400 requests
+104,857,600 bytes
+18.845 s
+5.31 MiB/s aggregate
+avg 185.07 ms
+median 185.95 ms
+p95 200.23 ms
+max 347.41 ms
+
+Sequential sample
+536,870,912 bytes
+83.440 s
+6.14 MiB/s
 ```
 
-Outside Internet connectivity was removed during testing and the map remained functional.
-
-This aligns with Offline GeoStack’s hard doctrine: **no operational dependence on public Internet connectivity.**
+Wi-Fi was substantially slower but stable enough to complete the synthetic storage benchmark and, more importantly, the real ArcGIS Earth test.
 
 ---
 
-## 13. Relationship to TPKX
+## 7. ArcGIS Earth live proof
 
-Map Fountain does not replace TPKX.
+ArcGIS Earth opened `ESG1N.tpkx` through the Samba path while connected over Wi-Fi.
 
-The same source raster pyramid now has two useful deployment forms:
+The application rendered the Jacksonville map successfully and supported normal interactive navigation.
+
+This promoted the path from storage-bench proof to real-viewer proof.
+
+Current accepted chain:
 
 ```text
-MBTiles → Compact Cache V2 converter → TPKX → local ArcGIS Earth file
-
-MBTiles → Map Fountain → WMTS → ArcGIS Earth Mobile
+USB SSD
+→ Flint 2
+→ Samba
+→ Wi-Fi
+→ Windows
+→ ArcGIS Earth
+→ native TPKX
 ```
 
-TPKX is excellent for local packaged viewing. MBTiles is excellent as Map Fountain’s serving-side tile store.
+---
 
-The later TPKX Map Factory v1.2 TEST therefore adds `TPKX / MBTiles / Both` normal output choices.
+## 8. Packet-analysis boundary
+
+The SMB session uses SMB3 encryption on the tested configuration.
+
+Wireshark can still show:
+
+- TCP endpoints;
+- timing;
+- byte volume;
+- connection continuity;
+- resets;
+- retransmission behavior visible at TCP;
+- overall traffic shape.
+
+Without SMB session keys it cannot decode the individual encrypted SMB file-read commands.
+
+The Ethernet and Wi-Fi captures were therefore used to validate hose behavior while the benchmark script supplied logical request timing and the ArcGIS Earth runtime supplied final application acceptance.
+
+---
+
+## 9. DHCP / addressing rule
+
+Normal Eaters use DHCP.
+
+Do not manually assign client static addresses simply to consume maps.
+
+The router remains the predictable network authority and provides the known share address. If a future client temporarily needs a stable address for a separate service, prefer a router-side DHCP reservation over manual Windows static configuration.
+
+---
+
+## 10. Feeder / Eater separation
+
+### Eaters
+
+Field clients consume maps.
+
+Current proven Eater:
+
+- Windows ArcGIS Earth laptop opening a native TPKX directly from the router share.
+
+### Feeder
+
+A future basecamp Feeder may maintain the SSD inventory:
+
+```text
+approved master library
+→ compare
+→ copy new
+→ replace updated
+→ retire obsolete when instructed
+→ verify
+→ MAP FOUNTAIN CURRENT
+```
+
+The router does not need Feeder/Eater logic.
+
+---
+
+## 11. Offline boundary
+
+The proven field path does not require public Internet connectivity.
+
+Private local networking is part of the design, not a violation of the offline doctrine.
+
+```text
+no cloud map request
+no public tile service
+no portal dependency
+no Internet requirement for the local TPKX read path
+```
+
+---
+
+## 12. Relationship to MBTiles
+
+The Factory may produce TPKX, MBTiles, or both.
+
+Current router proof is strongest for direct network-hosted TPKX on Windows ArcGIS Earth.
+
+MBTiles remain valuable as:
+
+- a first-class Factory output;
+- a source for future router-only mobile delivery experiments;
+- a general raster-pyramid interchange/storage format.
+
+Do not force MBTiles through an active field server merely because earlier prototypes did so. Use the simplest client-compatible delivery form that survives real-target acceptance.
+
+---
+
+## 13. Historical Windows WMTS implementation
+
+On 2026-08-16 the project proved a Windows-hosted HTTPS WMTS path to ArcGIS Earth Mobile over Android USB tether.
+
+That implementation established important lessons about:
+
+- local/offline mobile service consumption;
+- WMTS row conversion;
+- unique per-map service identity;
+- QR ingestion;
+- mobile cache behavior;
+- deliberate versus rapid navigation.
+
+It remains engineering history and a reusable compatibility technique, but it is not the current field-appliance architecture.
 
 ---
 
@@ -297,24 +317,26 @@ The later TPKX Map Factory v1.2 TEST therefore adds `TPKX / MBTiles / Both` norm
 
 Never commit:
 
-- private TLS keys;
-- operational certificates tied to deployed systems;
-- credentials;
-- confidential map databases.
+- live credentials;
+- private TLS keys from historical service experiments;
+- confidential map databases;
+- operationally sensitive packet captures without review.
 
-The repository is source/documentation truth. Operational secrets remain outside source control.
+Public documentation may record evidence hashes and sanitized technical results.
 
 ---
 
 ## 15. Current do-not-regress rules
 
-1. Do not hard-code a test MBTiles into the normal GUI.
-2. Do not reuse one WMTS identity for different selected maps.
-3. Do not make the public Internet part of the core path.
-4. Do not make ordinary operators type long service URLs when QR can carry them.
-5. Do not silently serve a certificate for the wrong IP.
-6. Do not claim Wi-Fi is live-proven until it is actually tested.
-7. Do not hide the rapid-navigation limitation.
-8. Do not publish private keys.
-9. Do not rebuild raster cartography in the server; serve the existing pyramid.
-10. Let the real mobile viewer decide acceptance.
+1. Keep the field appliance router-only unless real target evidence proves additional software is necessary.
+2. Do not make public Internet part of the core map path.
+3. Do not make ordinary Eaters use manual static IP configuration.
+4. Preserve native map products; do not rerender them in the router.
+5. Do not confuse application-observed cached throughput with raw network speed.
+6. Do not optimize a guessed bottleneck before ArcGIS Earth exposes a reproducible problem.
+7. Keep field consumption read-only where practical.
+8. Preserve controlled-test discipline: one major variable at a time.
+9. Let packet evidence validate the network path.
+10. Let the real ArcGIS Earth runtime decide acceptance.
+
+> **Keep the router dumb. Keep the maps native. Let ArcGIS Earth do the GIS work.**
