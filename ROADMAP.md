@@ -18,67 +18,61 @@ USB SSD
 
 The production-scale `ESG1N.tpkx` package was benchmarked through the router over Ethernet and Wi-Fi, then opened directly from the router share and rendered interactively in ArcGIS Earth over Wi-Fi.
 
-The field architecture is now **router only**. The router remains intentionally dumb: storage, DHCP/local networking, and file sharing. ArcGIS Earth remains the GIS runtime.
+The field architecture is **router only**. The router remains intentionally dumb: storage, DHCP/local networking, and file sharing. ArcGIS Earth remains the GIS runtime.
 
 See:
 
 - [`README.md`](README.md)
-- [`docs/MAP_TANK_TEST_PLAN_2026-08-17.md`](docs/MAP_TANK_TEST_PLAN_2026-08-17.md)
+- [`docs/MAP_FOUNTAIN_ROUTER_ACCEPTANCE_2026-08-17.md`](docs/MAP_FOUNTAIN_ROUTER_ACCEPTANCE_2026-08-17.md)
 - [`docs/ACCEPTANCE_RECORD.md`](docs/ACCEPTANCE_RECORD.md)
-- [`docs/map_fountain_router_architecture_2026-08-17.svg`](docs/map_fountain_router_architecture_2026-08-17.svg)
+- [`docs/arcgis_system_router_flowchart_2026-08-17.svg`](docs/arcgis_system_router_flowchart_2026-08-17.svg)
 
-## Immediate gates
+## Immediate gate — Android
 
-### 1. ArcGIS Earth Ethernet comparison
+### ArcGIS Earth Mobile on the router-only architecture
 
-**Status: next controlled application gate**
+**Status: NEXT ACCEPTANCE GATE**
+
+The Windows direct-TPKX-over-Samba path is proven. Android must now be tested against the same router-attached SSD without reviving a field GIS-server appliance by default.
+
+Start from the simplest client-compatible possibilities and let ArcGIS Earth Mobile decide acceptance.
+
+Questions to answer:
+
+- Can ArcGIS Earth Mobile consume a useful map directly from router-attached storage?
+- Which native or standards-based input path does the Android client actually accept from the private Wi-Fi network?
+- Can the map remain on the SSD instead of being copied wholesale to the phone?
+- What, if any, thin compatibility layer is truly required?
+- Can the result operate with outside Internet removed?
+
+Do not add server complexity before the real mobile target demonstrates a need.
+
+## Follow-on gates
+
+### ArcGIS Earth Ethernet application comparison
 
 Repeat the successful ArcGIS Earth / `ESG1N.tpkx` direct-network test over Ethernet while changing no other major variable.
 
-Compare:
+Compare initial open behavior, time to first useful display, pan/zoom responsiveness, SMB/TCP byte flow, and caching/read-ahead behavior.
 
-- initial package open behavior;
-- time to first useful display;
-- pan/zoom responsiveness;
-- SMB/TCP byte flow;
-- retries/retransmissions;
-- Windows caching/read-ahead behavior.
+### Wi-Fi ArcGIS Earth navigation characterization
 
-### 2. Wi-Fi ArcGIS Earth navigation characterization
-
-**Status: LIVE-PROVEN basic operation; deeper characterization pending**
-
-The map rendered successfully over Wi-Fi. Next, measure real operator patterns rather than synthetic storage loads:
+The map rendered successfully over Wi-Fi. Characterize real operator patterns:
 
 - deliberate pan;
 - progressive deep zoom;
 - return to overview;
 - long traverse across package coverage;
-- repeated close/reopen;
-- reconnect after leaving/rejoining Wi-Fi.
+- close/reopen;
+- Wi-Fi leave/rejoin.
 
-Do not optimize the network path unless the real viewer exposes an actual problem.
+### Multiple Eaters
 
-### 3. Multiple Eaters
+Test two or more clients against the same router-attached SSD before making any supported multi-client claim.
 
-**Status: not yet accepted**
+### Feeder workflow
 
-Test two or more clients against the same router-attached SSD.
-
-Questions:
-
-- Does one ArcGIS Earth client materially degrade another?
-- Does Samba remain stable under simultaneous reads?
-- What does the SSD/router path do with independent random reads?
-- Is the practical field limit the router, storage device, radio channel, or client behavior?
-
-Do not market multi-client behavior until measured.
-
-### 4. Feeder workflow
-
-**Status: designed**
-
-Create a basecamp-side maintenance tool that can:
+After consumption behavior is stable, build the basecamp maintenance path:
 
 ```text
 find Map Fountain
@@ -93,39 +87,33 @@ find Map Fountain
 
 Changing map inventory must not require GIS-specific router configuration.
 
-### 5. ArcGIS Earth Mobile router-only path
-
-**Status: future gate**
-
-Desktop direct-TPKX-over-Samba is proven. Mobile still needs its own real-target acceptance.
-
-Investigate the simplest router-only delivery forms first. Do not add a field GIS server process merely to recreate a capability that the client can obtain more simply.
-
 ## Performance baseline
 
 ### Ethernet storage benchmark
 
-- random: 25.33 MiB/s
-- random p95: 9.98 ms
-- four-client aggregate: 51.21 MiB/s
-- sequential: 42.58 MiB/s
+- random: **25.33 MiB/s**
+- random p95: **9.98 ms**
+- four-client aggregate: **51.21 MiB/s**
+- sequential: **42.58 MiB/s**
 
 ### Wi-Fi storage benchmark
 
-- random: 5.19 MiB/s
-- random p95: 50.56 ms
-- four-client aggregate: 5.31 MiB/s
-- sequential: 6.14 MiB/s
+- random: **5.19 MiB/s**
+- random p95: **50.56 ms**
+- four-client aggregate: **5.31 MiB/s**
+- sequential: **6.14 MiB/s**
 
 The synthetic benchmark is a diagnostic baseline, not a substitute for ArcGIS Earth behavior.
 
 ## Public documentation / history
 
+- keep the canonical Factory / PC / Android router-only flowchart at the top of all three active repositories;
 - preserve the 2026-08-17 benchmark numbers and evidence hashes;
-- keep the router-only architecture drawing at the top of the active repositories;
-- publish the successful ArcGIS Earth Wi-Fi proof as the primary Map Fountain milestone;
-- retain earlier Windows-hosted WMTS work as development history, not the current field architecture;
-- avoid claiming a worldwide first unless stronger historical evidence supports it;
+- preserve the successful ArcGIS Earth Wi-Fi proof as the primary Map Fountain milestone;
+- retain the 2026-08-16 Windows-hosted WMTS work as development history, not the current field architecture;
+- use **Map Fountain** as the current product name;
+- use the historical `MAP_TANK_FIRST_BENCH...` name only when referring to that exact benchmark artifact;
+- do not claim a worldwide first without stronger historical evidence;
 - accurately state that the documented prior-art search did not find a published implementation matching the exact proven router + Samba + ArcGIS Earth + native TPKX chain.
 
 ## Non-goals
@@ -135,7 +123,6 @@ The synthetic benchmark is a diagnostic baseline, not a substitute for ArcGIS Ea
 - requiring public Internet;
 - adding cloud accounts or portals to the core path;
 - making operators administer network internals unnecessarily;
-- copying entire map libraries onto every client when direct local consumption works;
 - rewriting proven map-manufacturing components without a verified defect;
 - optimizing a guessed bottleneck.
 
