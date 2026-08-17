@@ -2,193 +2,169 @@
 
 ## Evidence labels
 
-**LIVE-PROVEN** — observed on the real Windows/Android target and accepted by the intended viewer/workflow.
+**LIVE-PROVEN** — observed on the real intended target and accepted by the intended viewer/workflow.
 
-**LIVE-OBSERVED** — behavior directly observed but not yet treated as a full acceptance gate.
+**LIVE-OBSERVED** — behavior directly observed but not yet treated as a complete acceptance gate.
 
-**BUILT / SELF-TESTED** — implementation exists and passes internal/static checks but has not yet crossed the live target.
+**BUILT / SELF-TESTED** — implementation exists and passes internal/static checks but has not yet crossed the real target.
 
 **DESIGNED** — architecture or behavior is planned but not yet built/proven.
 
 ---
 
-## 1. PC → Android USB network proof — 2026-08-16
+## 1. Router-only Map Fountain — 2026-08-17
 
 **Status: LIVE-PROVEN**
 
-Target:
+Hardware:
 
-- Windows PC
-- Motorola Android phone
-- Android USB tether enabled
-- Windows adapter detected as `Remote NDIS based Internet Sharing Device #2`
+- GL.iNet Flint 2 (`GL-MT6000`)
+- USB-attached SSD
+- stock Samba network storage
+- Windows laptop on DHCP
+- ArcGIS Earth
 
-Observed PC-side USB IPv4 during the proof:
+Large specimen:
 
-`10.13.166.115`
+- `ESG1N.tpkx`
+- 26,174,899,216 bytes by the benchmark script
+- 25,561,426 KB Windows File Explorer identification
 
-Observed Android client IPv4 in server logs:
+Proven field chain:
 
-`10.13.166.67`
+```text
+USB SSD
+→ Flint 2
+→ Samba / SMB
+→ Wi-Fi
+→ Windows
+→ ArcGIS Earth
+→ native TPKX opened and rendered in place
+```
 
-Android Chrome successfully opened the Windows-side local test page through the USB-tether network.
+The decisive acceptance observation was ArcGIS Earth rendering and navigating the Jacksonville map while the TPKX remained on the router-attached SSD.
 
-This established the private PC ↔ phone IP path before ArcGIS Earth Mobile was involved.
+No field GIS server process was required for this proven TPKX path.
 
 ---
 
-## 2. First ArcGIS Earth Mobile WMTS proof — 2026-08-16
+## 2. Large-file Ethernet storage baseline — 2026-08-17
 
 **Status: LIVE-PROVEN**
 
-Fixture:
+Map Tank First Bench v0.1.1 TEST ran against the same `ESG1N.tpkx` through Ethernet.
 
-- QGIS-created raster MBTiles
-- 174 PNG tiles
-- Z0–Z18
-- small Jacksonville-area footprint
+Results:
 
-The first server exposed an EPSG:3857 / GoogleMapsCompatible WMTS service over local HTTP.
+- OPEN/STAT: PASS
+- random seek: 25.33 MiB/s
+- random avg: 9.34 ms
+- random median: 9.42 ms
+- random p95: 9.98 ms
+- random max: 16.17 ms
+- four-client aggregate: 51.21 MiB/s
+- sequential sample: 42.58 MiB/s
 
-ArcGIS Earth Mobile requested actual WMTS tile URLs from the Windows PC and the server returned HTTP `200` responses across multiple zoom levels.
+The random phase ran first specifically to reduce cache contamination after the original small-file benchmark demonstrated that Windows could make later reads appear unrealistically fast.
 
-The map displayed on Android.
+---
 
-Outside Internet connectivity was removed and the local map path continued to work.
+## 3. Same large file over Wi-Fi — 2026-08-17
 
-This proved the central architecture:
+**Status: LIVE-PROVEN**
+
+Same router, same SSD, same TPKX, same benchmark. Major variable changed: Ethernet → Wi-Fi.
+
+Results:
+
+- OPEN/STAT: PASS
+- random seek: 5.19 MiB/s
+- random avg: 46.36 ms
+- random median: 45.42 ms
+- random p95: 50.56 ms
+- random max: 66.71 ms
+- four-client aggregate: 5.31 MiB/s
+- sequential sample: 6.14 MiB/s
+- sequential 536,870,912-byte logical sample: 83.440 s
+
+Wi-Fi was much slower but completed normally. During the long sequential phase the operator observed sustained Wireshark activity; the benchmark later reported BENCH COMPLETE.
+
+The Wi-Fi packet capture began shortly after the benchmark started, so the console output is the authority for the early random/four-client results.
+
+---
+
+## 4. Evidence fingerprints
+
+Original local acceptance artifacts are identified by SHA-256:
 
 ```text
-MBTiles
-→ local tile service
-→ USB tether
+Ethernet benchmark screenshot
+710e19a0676ada1729a35e13693b8ae81d0527fc3ba654a2da32288ac58244af
+
+Ethernet PCAP
+3eda0dc91dee83ac12a96912d8f7264e846c7393c3983de34970b5571a622f0f
+
+Wi-Fi benchmark screenshot
+631af7d06f433964175e1c3dc414767cc4c08f98af006406d8068be3b081ba3f
+
+Wi-Fi PCAP
+67db0a4dfee9519f933f0fc2e550da69634b293c815cd4b2d81413b38c60f1d4
+
+ArcGIS Earth Wi-Fi success screenshot
+8592abb26f9025baf665e4c4174670ba3a2bb433db96cbd092dd27355a9fd840
+```
+
+The packet captures are large bench artifacts and are not stored in the public repository. The hashes preserve chain-of-evidence identity.
+
+---
+
+## 5. Historical Windows WMTS proof — 2026-08-16
+
+**Status: LIVE-PROVEN HISTORICAL PRECURSOR**
+
+Before the router-only breakthrough, a Windows-hosted Map Fountain implementation proved:
+
+```text
+raster MBTiles
+→ local HTTPS WMTS
+→ Android USB tether
 → ArcGIS Earth Mobile
 ```
 
----
+Observed proof included:
 
-## 3. HTTPS + QR proof — 2026-08-16
+- local PC-to-phone networking;
+- ArcGIS Earth Mobile requesting real WMTS tiles;
+- HTTPS transport;
+- QR loading;
+- operation with outside Internet removed;
+- multiple substantial MBTiles;
+- a large Lago panorama displaying smoothly under deliberate navigation.
 
-**Status: LIVE-PROVEN**
-
-The phone rejected the tested HTTP QR workflow and requested HTTPS.
-
-A local HTTPS branch was created. After removing the target-PC OpenSSL dependency and supplying matching local certificate material, the phone reported success and ArcGIS Earth Mobile displayed the WMTS map over HTTPS.
-
-QR loading then became the practical operator path, eliminating repeated manual typing of the long WMTS GetCapabilities URL.
-
-Important current limitation:
-
-- the bench certificate was tied to the observed PC-side tether address `10.13.166.115`;
-- production-grade certificate/IP lifecycle handling remains unfinished.
+That work remains part of the engineering lineage, but the current field-appliance direction is router-only.
 
 ---
 
-## 4. Selectable MBTiles GUI — v0.2.0 — 2026-08-16
+## 6. Prior-art boundary recorded 2026-08-17
 
-**Status: LIVE-TESTED; DEFECT FOUND**
+A targeted search found prior art for the individual components and adjacent architectures, including router Samba storage, GIS network-share access, TPKX network-file optimization, NAS-based geospatial storage, and active tile servers.
 
-v0.2.0 replaced the hard-coded small fixture with a GUI that allowed the operator to choose an arbitrary `.mbtiles` file.
-
-Observed defect:
-
-- a different MBTiles was selected;
-- ArcGIS Earth Mobile still returned to the original small test map.
-
-Root cause:
-
-- the WMTS layer/service identity and tile URLs remained unchanged between maps;
-- ArcGIS Earth Mobile could legitimately reuse stale cached service/tile content.
-
-This was not accepted.
-
----
-
-## 5. Unique per-map identity — v0.2.1 — 2026-08-16
-
-**Status: LIVE-PROVEN**
-
-v0.2.1 changed every selected MBTiles into a distinct WMTS service from the client’s point of view.
-
-Per-map uniqueness includes:
-
-- service ID derived from file identity;
-- unique WMTS layer identifier;
-- unique GetCapabilities URL;
-- unique REST tile URL path;
-- no-cache headers during the test phase.
-
-After the change, the operator confirmed the newly selected map appeared instead of the stale small fixture.
-
----
-
-## 6. Multiple substantial MBTiles — 2026-08-16
-
-**Status: LIVE-PROVEN**
-
-The operator confirmed ArcGIS Earth Mobile displayed **three different substantial MBTiles** through v0.2.1.
-
-This establishes repeatability beyond the original 174-tile fixture.
-
----
-
-## 7. Large Lago panorama — 2026-08-16
-
-**Status: LIVE-PROVEN**
-
-A large Lago raster panorama MBTiles was selected through the v0.2.1 GUI and served live to ArcGIS Earth Mobile.
-
-Observed result:
-
-- correct map selected;
-- HTTPS WMTS service live;
-- Android requested unique per-map tile URLs;
-- map displayed on the phone;
-- zoom/pan experience was described as smooth when operated deliberately;
-- mobile experience closely matched the PC navigation behavior.
-
-This is the current strongest visual proof that Map Fountain is not limited to tiny fixtures.
-
----
-
-## 8. Current mobile navigation envelope
-
-**Status: LIVE-OBSERVED**
-
-Operator observation after several large-map tests:
-
-> **The key is not trying to zoom or move super fast. It does not like that, but if you are steady it is gold.**
-
-Engineering interpretation:
-
-- deliberate navigation is currently accepted;
-- rapid repeated pan/zoom can outrun some part of the mobile delivery/render path;
-- the bottleneck has not yet been isolated;
-- do not claim that high-speed navigation is solved.
-
----
-
-## 9. Internet-dependency acceptance
-
-**Status: LIVE-PROVEN FOR THE TESTED PATH**
-
-Outside Internet connectivity was removed during the USB-tether map-service test and ArcGIS Earth Mobile continued to retrieve/display local map content.
-
-The operational path under test is therefore local:
+The search did **not** find a published implementation matching the exact proven chain:
 
 ```text
-Windows MBTiles / SSD
-→ Windows Map Fountain
-→ private USB tether
-→ Android ArcGIS Earth Mobile
+consumer router + USB SSD
+→ Samba
+→ Wi-Fi
+→ ArcGIS Earth
+→ large native TPKX rendered in place
 ```
 
-No public map server, cloud account, or public Internet connection is required for tile delivery in that path.
+This record does not claim a mathematically established worldwide first. It records independent development plus the result of the documented prior-art search.
 
 ---
 
 ## Current accepted statement
 
-> **Map Fountain v0.2.1 TEST is LIVE-PROVEN as a selectable Windows raster-MBTiles → HTTPS WMTS → Android USB-tether → ArcGIS Earth Mobile local map-delivery path, with outside Internet removed during testing.**
+> **Map Fountain is LIVE-PROVEN as a router-only offline field map appliance in which a GL.iNet Flint 2 exposes a USB-SSD native TPKX through Samba and ArcGIS Earth opens and renders that package directly over Wi-Fi.**
 
-The current acceptance does not yet include generalized certificate/IP lifecycle handling, Wi-Fi transport, cold-restart acceptance, or unrestricted rapid navigation.
+The next acceptance gates are the ArcGIS Earth Ethernet comparison, cold/reconnect behavior, multiple Eaters, and a separate router-only mobile path.
