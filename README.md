@@ -2,9 +2,9 @@
 
 ## Router-only offline map delivery for ArcGIS Earth
 
-**A USB SSD on a consumer router becomes a private offline map reservoir. ArcGIS Earth reads native TPKX directly through the router's Samba share over Ethernet or Wi-Fi. No GIS server process is required in the field path.**
+**A USB SSD on a consumer router becomes a private offline map reservoir. ArcGIS Earth reads native TPKX directly through the router's Samba share over Ethernet or Wi-Fi. No field GIS server process is required for the proven Windows path.**
 
-![ArcGIS Earth Systems — router-only Map Fountain architecture](docs/map_fountain_router_architecture_2026-08-17.svg)
+![Canonical ArcGIS Earth Systems router flowchart](docs/arcgis_system_router_flowchart_2026-08-17.svg)
 
 > **The router does not need to understand maps. It only needs to share bytes reliably. ArcGIS Earth supplies the GIS intelligence.**
 
@@ -12,72 +12,68 @@
 
 ## Live milestone — 2026-08-17
 
-**Status: LIVE-PROVEN**
-
-The tested field chain is:
+**Status: LIVE-PROVEN on Windows ArcGIS Earth**
 
 ```text
 native TPKX on USB SSD
         ↓
 GL.iNet Flint 2 (GL-MT6000)
         ↓
-Samba / SMB network share
+Samba / SMB
         ↓
 Ethernet or Wi-Fi
         ↓
-Windows laptop
+Windows
         ↓
 ArcGIS Earth
 ```
 
 A production-scale `ESG1N.tpkx` package was opened **in place** from the router-attached SSD and rendered interactively in ArcGIS Earth over Wi-Fi.
 
-![Map Fountain router live proof](docs/map_fountain_router_live_proof_2026-08-17.svg)
-
-The package used for the large-file tests was:
+The specimen used for the controlled large-file proof was:
 
 - `ESG1N.tpkx`
 - script-observed size: **26,174,899,216 bytes**
 - Windows File Explorer identification: **25,561,426 KB**
-- router share: `\\192.168.8.1\New TPKX\Esri and Label\ESG1N.tpkx`
+- network path: `\\192.168.8.1\New TPKX\Esri and Label\ESG1N.tpkx`
 
-The final acceptance authority was the real viewer: **ArcGIS Earth rendered and navigated the network-hosted TPKX over Wi-Fi.**
+The real viewer was the final acceptance authority: **ArcGIS Earth rendered and navigated the network-hosted TPKX over Wi-Fi.**
 
 ---
 
 ## Controlled storage proof
 
-The Map Tank First Bench v0.1.1 TEST deliberately tested random access before sequential access so Windows cache/read-ahead would not contaminate the most important measurement.
+The first small-file benchmark exposed heavy Windows caching, so the large-file benchmark was corrected to test the most important access pattern first:
+
+```text
+1. random seek
+2. four-client random read
+3. sequential sample
+```
 
 ### Ethernet — PASS
 
-- random-seek: **25.33 MiB/s**
+- random seek: **25.33 MiB/s**
 - random average latency: **9.34 ms**
-- random median: **9.42 ms**
 - random p95: **9.98 ms**
-- random max: **16.17 ms**
 - four-client aggregate: **51.21 MiB/s**
 - sequential sample: **42.58 MiB/s**
 
 ### Wi-Fi — PASS
 
-- random-seek: **5.19 MiB/s**
+- random seek: **5.19 MiB/s**
 - random average latency: **46.36 ms**
-- random median: **45.42 ms**
 - random p95: **50.56 ms**
-- random max: **66.71 ms**
 - four-client aggregate: **5.31 MiB/s**
 - sequential sample: **6.14 MiB/s**
 
-The Wi-Fi test was much slower than Ethernet but completed successfully. The long sequential phase was not a hang; the 536,870,912-byte sample completed in **83.440 seconds**.
+The Wi-Fi path was substantially slower than Ethernet but remained stable enough to complete the benchmark and, more importantly, the real ArcGIS Earth test.
 
-Wireshark captures were retained and inspected. The Ethernet and Wi-Fi SMB paths remained stable at the TCP level during the captured tests; the Wi-Fi capture began shortly after the benchmark started, so the script remains the authority for the early random/four-client measurements in that run.
+Wireshark captures were retained and inspected. The SMB path remained stable at the TCP level during the captured tests. Because SMB3 encryption hides individual file-read commands without session keys, the benchmark supplied logical request timing while Wireshark validated the transport behavior.
 
 ---
 
 ## Evidence fingerprints
-
-These SHA-256 values identify the original local evidence used for the 2026-08-17 acceptance record:
 
 ```text
 Ethernet benchmark screenshot
@@ -96,13 +92,13 @@ ArcGIS Earth Wi-Fi success screenshot
 8592abb26f9025baf665e4c4174670ba3a2bb433db96cbd092dd27355a9fd840
 ```
 
-The packet captures themselves are intentionally not committed to this repository because they are large bench artifacts. The hashes make the acceptance record independently checkable against the preserved originals.
+The packet captures are large bench artifacts and are not committed here. These hashes identify the preserved originals used for the acceptance record.
 
 ---
 
-## Why this architecture matters
+## Why the architecture matters
 
-The field appliance is intentionally dumb:
+The field appliance is intentionally simple:
 
 ```text
 USB storage
@@ -111,55 +107,46 @@ USB storage
 = Map Fountain
 ```
 
-There is no requirement for a field GIS server, map-rendering service, Python process, SQLite tile server, cloud account, or public Internet connection for the proven Windows/TPKX path.
+There is no requirement for a field GIS server, map renderer, Python service, SQLite tile service, cloud account, or public Internet connection for the proven Windows/TPKX path.
 
-The design takes advantage of a useful division of labor:
+The division of labor is clean:
 
 - the **Factory** manufactures the map;
-- the **SSD** stores the finished map;
-- the **router** exposes the file over the local network;
+- the **SSD** stores the finished product;
+- the **router** exposes the file;
 - **Windows SMB** carries the file access;
-- **ArcGIS Earth** understands and renders the TPKX.
+- **ArcGIS Earth** understands and renders the native TPKX.
 
 Changing the map library does not require GIS-specific router configuration. Add finished maps to the SSD, replace maps, or swap in another prepared SSD.
 
 ---
 
-## Feeder / Eater operating model
+## Current status
 
-### Eaters
-
-Field clients consume the Map Fountain read-only where practical.
-
-Current proven Eater:
-
-- Windows laptop running ArcGIS Earth and opening native TPKX directly from the router share.
-
-Additional ArcGIS Earth clients can be tested without changing the router's job.
-
-### Feeder
-
-At basecamp, a future Feeder tool may:
-
-```text
-approved master map library
-        ↓
-find Map Fountain
-        ↓
-compare SSD inventory
-        ↓
-add / replace / retire maps
-        ↓
-verify
-        ↓
-MAP FOUNTAIN CURRENT
-```
-
-The router itself does not need Feeder/Eater logic.
+| Capability | Status |
+| --- | --- |
+| Flint 2 + USB SSD Samba share | ✅ **LIVE-PROVEN** |
+| Large TPKX open/stat over Samba | ✅ **LIVE-PROVEN** |
+| Large-file Ethernet benchmark | ✅ **LIVE-PROVEN** |
+| Large-file Wi-Fi benchmark | ✅ **LIVE-PROVEN** |
+| ArcGIS Earth direct network TPKX over Wi-Fi | ✅ **LIVE-PROVEN** |
+| Router-only ArcGIS Earth Mobile path | 🟡 **NEXT ACCEPTANCE GATE** |
+| Multiple simultaneous ArcGIS Earth clients | 🟡 **NOT YET ACCEPTED** |
+| Operational public-Internet dependency | **NONE BY DESIGN** |
 
 ---
 
-## Relationship to the earlier Windows Map Fountain proof
+## Android is next
+
+The Windows path is proven. **ArcGIS Earth Mobile must now earn its own router-only acceptance.**
+
+The canonical flowchart deliberately marks Android as the next gate rather than pretending the mobile router path is already solved.
+
+Do not add a field GIS server merely because Android still needs a compatible consumption path. Start from the simplest router-only possibilities and let the real mobile target decide.
+
+---
+
+## Historical precursor
 
 On 2026-08-16 a separate Windows-hosted implementation proved:
 
@@ -170,33 +157,15 @@ raster MBTiles
 → ArcGIS Earth Mobile
 ```
 
-That work remains useful engineering history and proved ArcGIS Earth Mobile could consume locally delivered raster tiles with outside Internet removed.
-
-The **current field-appliance direction is router-only**. The 2026-08-17 breakthrough removed the active GIS-server requirement from the proven desktop TPKX path.
-
----
-
-## Current status
-
-| Capability | Status |
-| --- | --- |
-| USB SSD exposed by Flint 2 Samba | ✅ **LIVE-PROVEN** |
-| Large TPKX open/stat over Samba | ✅ **LIVE-PROVEN** |
-| Large-file Ethernet random/sequential benchmark | ✅ **LIVE-PROVEN** |
-| Large-file Wi-Fi random/sequential benchmark | ✅ **LIVE-PROVEN** |
-| ArcGIS Earth direct network TPKX over Wi-Fi | ✅ **LIVE-PROVEN** |
-| ArcGIS Earth direct network TPKX over Ethernet | 🟡 **NEXT COMPARISON GATE** |
-| Multiple simultaneous ArcGIS Earth Eaters | 🟡 **NOT YET ACCEPTED** |
-| Router-only ArcGIS Earth Mobile path | 🟡 **NOT YET ACCEPTED** |
-| Operational public-Internet dependency | **NONE BY DESIGN** |
+That work remains useful engineering history and proved local/offline mobile tile delivery, but it is **not the current field-appliance architecture**.
 
 ---
 
 ## Prior-art / novelty boundary
 
-A 2026-08-17 search found established prior art for the individual ingredients: router-hosted Samba storage, GIS access to network shares, TPKX optimized for network-file access, NAS-based geospatial workflows, and active tile servers.
+A 2026-08-17 prior-art search found established examples for the individual ingredients: router-hosted Samba storage, GIS access to network shares, TPKX network-file access, NAS geospatial workflows, and active tile servers.
 
-What was **not** found in that search was a published implementation of this exact proven chain:
+What was **not** found was a published implementation matching the exact proven chain:
 
 ```text
 consumer router + USB SSD
@@ -206,7 +175,18 @@ consumer router + USB SSD
 → large native TPKX opened and rendered in place
 ```
 
-That is not presented as a mathematically proven worldwide first. It is recorded as an independently developed, measured architecture for which no matching published implementation was found during the documented prior-art search.
+That is not claimed as a mathematically proven worldwide first. It is recorded as an independently developed and measured architecture for which no matching published implementation was found in the documented search.
+
+---
+
+## Current engineering record
+
+- [Router acceptance record — 2026-08-17](docs/MAP_FOUNTAIN_ROUTER_ACCEPTANCE_2026-08-17.md)
+- [Project status — 2026-08-17](docs/PROJECT_STATUS_2026-08-17.md)
+- [Technical architecture](docs/TECHNICAL_ARCHITECTURE.md)
+- [AI / maintainer restart note](docs/AI_CONTINUITY_RESTART_NOTE.md)
+- [Roadmap](ROADMAP.md)
+- [Changelog](CHANGELOG.md)
 
 ---
 
@@ -219,7 +199,7 @@ That is not presented as a mathematically proven worldwide first. It is recorded
 - Change one major test variable at a time.
 - Wireshark and real-viewer evidence outrank assumptions.
 - Do not call a path proven until the intended ArcGIS Earth runtime passes it.
-- Do not add field server complexity unless a real target proves it is necessary.
+- Do not add field-server complexity unless the real target proves it is necessary.
 
 ---
 
