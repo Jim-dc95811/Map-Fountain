@@ -1,5 +1,33 @@
 # Map Fountain — Changelog
 
+## Android Static REST WMTS — 2026-08-17 — LIVE-PROVEN
+
+- Promoted the router-only Android path to **LIVE-PROVEN**.
+- Frozen accepted Android delivery flavor: **Static REST WMTS**.
+- Proven chain:
+
+```text
+Static REST WMTS folder
+→ USB SSD
+→ GL.iNet Flint 2
+→ local HTTPS/WebDAV exact-file delivery
+→ Wi-Fi
+→ Android
+→ ArcGIS Earth Mobile
+```
+
+- Android Chrome proved direct exact-file GET from the Flint-attached SSD.
+- The fixture `WMTSCapabilities.xml` downloaded successfully through the same local HTTPS endpoint.
+- ArcGIS Earth Mobile accepted the capabilities URL and rendered the map.
+- ArcGIS Earth Android app cache was cleared, the app was force-stopped/reopened, and the router-hosted map rendered again.
+- No Python runtime, helper app, QGIS Server, Windows map server, or Raspberry Pi is required on the accepted Android field path.
+- Static WMTS package uses pre-rendered raster tiles, `WorldWebMercatorQuad`, and REST `TileMatrix / TileRow / TileCol` addressing.
+- Accepted test fixture derived from `small test 8_17_26 mbtile.mbtiles`: 31,064,064 bytes, 261 PNG tiles, Z0-Z20.
+- Self-test verified byte-identical raster extraction, TMS-to-WMTS row conversion, capabilities XML, matrix limits, and representative geographic indexing.
+- Live behavior note: slow deliberate pan/zoom works; rapid gestures can cause stalls or erratic display behavior.
+- Manufacturing rule frozen: keep MBTiles/TPKX compact; treat the expanded Static REST WMTS tree as an Android deployment artifact.
+- Production Factory next gate: short IDs, tile-count/free-space preflight, direct-to-SSD output, versioned cache-safe identity, automatic capabilities/QR generation, and large-map performance testing.
+
 ## Router-only Map Fountain — 2026-08-17 — LIVE-PROVEN
 
 - Promoted the consumer-router + USB-SSD architecture from bench concept to **LIVE-PROVEN**.
@@ -90,7 +118,7 @@ USB SSD
 ## v0.1.0 TEST — 2026-08-16
 
 - First MBTiles → WMTS local serving proof package.
-- Used a tiny QGIS-made MBTiles fixture: 174 PNG tiles, Z0–Z18.
+- Used a tiny QGIS-made MBTiles fixture: 174 PNG tiles, Z0-Z18.
 - HTTP WMTS reached ArcGIS Earth Mobile over Android USB tether.
 - Android requested real tiles and received HTTP 200 responses.
 - Outside Internet was removed and the local map path continued to work.
@@ -101,6 +129,6 @@ USB SSD
 
 Map Fountain emerged from Offline GeoStack / Rasta Pyramid Factory testing as a way to keep large map libraries local and let ArcGIS Earth consume only what the operator needs.
 
-The 2026-08-17 router proof simplified that idea to its core:
+The 2026-08-17 router proofs simplified that idea to its core:
 
-> **Put the native maps on the SSD, let the router share them, and let ArcGIS Earth read them directly.**
+> **Windows drinks native TPKX over SMB. Android drinks Static REST WMTS over HTTPS. The router only serves bytes.**
