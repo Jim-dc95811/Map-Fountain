@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1648" height="928" viewBox="0 0 1648 928" role="img" aria-labelledby="title desc">
+  <title id="title">ArcGIS Earth Systems router-only flowchart</title>
+  <desc id="desc">Factory, PC, and Android flowchart. QGIS and Python manufacture MBTiles and TPKX. ArcGIS Earth PC consumes TPKX from a USB SSD attached to a Wi-Fi router over Samba. Android router-only consumption is the next acceptance gate.</desc>
+  <rect width="1648" height="928" fill="#fff"/>
+  <style>
+    .t{font-family:Arial,Helvetica,sans-serif;fill:#111}.blue{fill:#1265c7}.green{fill:#2d7b1f}.orange{fill:#df7200}.h{font:700 42px Arial,Helvetica,sans-serif}.sh{font:700 26px Arial,Helvetica,sans-serif}.b{font:700 24px Arial,Helvetica,sans-serif}.m{font:22px Arial,Helvetica,sans-serif}.s{font:18px Arial,Helvetica,sans-serif}.i{font:italic 20px Arial,Helvetica,sans-serif}.boxb{fill:#fff;stroke:#3484dc;stroke-width:2}.boxg{fill:#fff;stroke:#6fb458;stroke-width:2}.boxo{fill:#fff;stroke:#ef9a36;stroke-width:2}.lineb{stroke:#1471ce;stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}.lineg{stroke:#3a8a2a;stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}.lineo{stroke:#df7200;stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  </style>
+  <defs>
+    <marker id="ab" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#1471ce"/></marker>
+    <marker id="ag" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#3a8a2a"/></marker>
+    <marker id="ao" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 Z" fill="#df7200"/></marker>
+  </defs>
+
+  <!-- FACTORY -->
+  <rect x="24" y="18" width="1184" height="432" rx="14" fill="#fff" stroke="#5ca0e6" stroke-width="2"/>
+  <text x="880" y="93" text-anchor="middle" class="t blue h">▰ FACTORY</text>
+  <line x1="775" y1="112" x2="1000" y2="112" stroke="#1471ce" stroke-width="2"/>
+  <text x="890" y="147" text-anchor="middle" class="t i">Build products from map sources and large images</text>
+
+  <rect x="62" y="200" width="184" height="90" rx="10" class="boxb"/><text x="154" y="254" text-anchor="middle" class="t b">ESRI</text>
+  <rect x="62" y="320" width="184" height="90" rx="10" class="boxb"/><text x="154" y="374" text-anchor="middle" class="t b">GOOGLE</text>
+  <rect x="365" y="52" width="286" height="112" rx="10" class="boxb"/><text x="508" y="100" text-anchor="middle" class="t b">IMAGES</text><text x="508" y="133" text-anchor="middle" class="t m">JPG, PNG, TIF</text>
+  <rect x="385" y="242" width="236" height="150" rx="10" class="boxb"/><text x="503" y="305" text-anchor="middle" class="t b">QGIS</text><text x="503" y="340" text-anchor="middle" class="t b">+</text><text x="503" y="375" text-anchor="middle" class="t b">PYTHON</text>
+  <rect x="714" y="258" width="238" height="132" rx="10" class="boxb"/><text x="833" y="310" text-anchor="middle" class="t b">MBTILES</text><text x="833" y="344" text-anchor="middle" class="t b">+</text><text x="833" y="378" text-anchor="middle" class="t b">TPKX</text>
+  <path d="M246 245 H300 V317 H377" class="lineb" marker-end="url(#ab)"/><path d="M246 365 H300 V317" class="lineb"/><path d="M508 164 V232" class="lineb" marker-end="url(#ab)"/><path d="M621 317 H704" class="lineb" marker-end="url(#ab)"/>
+  <path d="M952 309 H1015" class="lineo" marker-end="url(#ao)"/><text x="1035" y="298" class="t orange b">Mobile products</text><text x="1035" y="328" class="t orange m">MBTiles / TPKX</text>
+  <path d="M952 366 H1015" class="lineg" marker-end="url(#ag)"/><text x="1035" y="358" class="t green b">PC product</text><text x="1035" y="388" class="t green m">TPKX</text>
+
+  <!-- PC -->
+  <rect x="24" y="484" width="710" height="402" rx="14" fill="#fff" stroke="#78b85e" stroke-width="2"/>
+  <text x="370" y="544" text-anchor="middle" class="t green h">▣  PC</text><line x1="274" y1="560" x2="468" y2="560" stroke="#3a8a2a" stroke-width="2"/>
+  <rect x="60" y="574" width="190" height="70" rx="10" class="boxg"/><text x="155" y="618" text-anchor="middle" class="t b">GPS</text>
+  <rect x="60" y="666" width="190" height="88" rx="10" class="boxg"/><text x="155" y="699" text-anchor="middle" class="t b">MAP FOUNTAIN</text><text x="155" y="730" text-anchor="middle" class="t s">Router + USB SSD</text><text x="155" y="750" text-anchor="middle" class="t s">TPKX via Samba</text>
+  <rect x="60" y="776" width="190" height="70" rx="10" class="boxg"/><text x="155" y="820" text-anchor="middle" class="t b">PRAVE RADIO</text>
+  <rect x="400" y="610" width="240" height="188" rx="12" class="boxg"/><text x="520" y="681" text-anchor="middle" class="t b">ARCGIS</text><text x="520" y="718" text-anchor="middle" class="t b">EARTH</text><text x="520" y="755" text-anchor="middle" class="t b">PC</text>
+  <path d="M250 609 H300 V704 H388" class="lineg" marker-end="url(#ag)"/><path d="M250 710 H300" class="lineg"/><path d="M250 811 H300 V704" class="lineg"/>
+  <text x="520" y="833" text-anchor="middle" class="t green i">Consumes native TPKX from router share</text>
+  <text x="378" y="863" text-anchor="middle" class="t green s">Wi-Fi: LIVE-PROVEN  •  Ethernet storage path: LIVE-PROVEN</text>
+
+  <!-- ANDROID -->
+  <rect x="850" y="484" width="774" height="402" rx="14" fill="#fff" stroke="#f0a04b" stroke-width="2"/>
+  <text x="1234" y="544" text-anchor="middle" class="t orange h">▯  ANDROID</text><line x1="1090" y1="560" x2="1378" y2="560" stroke="#df7200" stroke-width="2"/>
+  <rect x="900" y="620" width="220" height="170" rx="12" class="boxo"/><text x="1010" y="680" text-anchor="middle" class="t b">ARCGIS</text><text x="1010" y="718" text-anchor="middle" class="t b">EARTH</text><text x="1010" y="756" text-anchor="middle" class="t b">MOBILE</text>
+  <text x="1210" y="690" text-anchor="middle" class="t b">WI-FI</text><path d="M1128 716 H1285" class="lineo" stroke-dasharray="3 14" marker-end="url(#ao)"/>
+  <rect x="1296" y="602" width="274" height="206" rx="12" class="boxo"/><text x="1433" y="646" text-anchor="middle" class="t b">WI-FI ROUTER</text><text x="1433" y="678" text-anchor="middle" class="t s">GL.iNet Flint 2</text><line x1="1314" y1="697" x2="1552" y2="697" stroke="#ef9a36" stroke-width="2"/><text x="1433" y="730" text-anchor="middle" class="t b">USB SSD</text><text x="1433" y="760" text-anchor="middle" class="t s">TPKX / MBTiles</text><text x="1433" y="787" text-anchor="middle" class="t s">Samba storage</text>
+  <text x="1238" y="835" text-anchor="middle" class="t orange i">Router-only Android consumption — NEXT ACCEPTANCE GATE</text>
+  <text x="1238" y="863" text-anchor="middle" class="t orange s">No field GIS server in the architecture</text>
+
+  <text x="824" y="915" text-anchor="middle" class="t s">ArcGIS Earth Systems — Offline Field Mapping • Canonical router-only architecture • 2026-08-17</text>
+</svg>
