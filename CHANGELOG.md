@@ -1,39 +1,63 @@
 # Map Fountain — Changelog
 
-## Map Tank branch — 2026-08-17 — DESIGNED / BENCH TEST PENDING
+## Router-only Map Fountain — 2026-08-17 — LIVE-PROVEN
 
-- Defined **Map Tank** as a consumer-router + USB-SSD deployment experiment for offline ArcGIS Earth map delivery.
-- First physical test hardware: **GL.iNet Flint 2 (GL-MT6000)**; hardware received 2026-08-17.
-- Preserved the existing Windows Map Fountain v0.2.1 USB-tether path as the current LIVE-PROVEN baseline.
-- Defined a **Feeder / Eater** operating model:
-  - **Eaters** are field clients consuming maps read-only where practical;
-  - **Feeder** is the basecamp client that refreshes the SSD against an approved master map library.
-- Defined the first controlled acceptance ladder:
-  1. Ethernet storage baseline with Wireshark;
-  2. direct ArcGIS Earth PC TPKX-over-share test if accepted;
-  3. Wi-Fi repeat with the same map/storage baseline;
-  4. simulated tile-consumption testing on Windows if useful;
-  5. ArcGIS Earth Mobile experiments after the storage/network behavior is understood.
-- Candidate mobile Map Tank paths recorded without claiming proof: static WMTS, thin Android bridge, whole-file TPKX, and PMTiles/byte-range fallback.
-- Governing design rule: keep the router dumb; changing or swapping map libraries should not require GIS-specific router reconfiguration.
-- Added `docs/MAP_TANK_TEST_PLAN_2026-08-17.md`.
+- Promoted the consumer-router + USB-SSD architecture from bench concept to **LIVE-PROVEN**.
+- Test hardware: **GL.iNet Flint 2 (GL-MT6000)** with USB-attached SSD and Samba file sharing.
+- Proven native file chain:
 
-## v0.2.1 TEST — 2026-08-16 — LIVE-PROVEN
+```text
+USB SSD
+→ Flint 2
+→ Samba / SMB
+→ Ethernet or Wi-Fi
+→ Windows
+→ ArcGIS Earth
+→ native TPKX opened in place
+```
 
-- Fixed stale-map reuse after v0.2.0 by assigning every selected MBTiles a unique service identity.
-- Added unique WMTS layer identifiers, unique GetCapabilities URLs, and unique REST tile URLs.
-- Added cache-busting/no-cache response headers during testing.
-- Confirmed selectable MBTiles GUI drives the actual served map rather than a hard-coded fixture.
+- Large specimen: `ESG1N.tpkx`, script-observed size **26,174,899,216 bytes**, Windows File Explorer identification **25,561,426 KB**.
+- Ethernet storage benchmark PASS:
+  - random seek 25.33 MiB/s;
+  - random average 9.34 ms;
+  - p95 9.98 ms;
+  - four-client aggregate 51.21 MiB/s;
+  - sequential sample 42.58 MiB/s.
+- Wi-Fi storage benchmark PASS:
+  - random seek 5.19 MiB/s;
+  - random average 46.36 ms;
+  - p95 50.56 ms;
+  - four-client aggregate 5.31 MiB/s;
+  - sequential sample 6.14 MiB/s.
+- The Wi-Fi sequential 536,870,912-byte logical sample completed in 83.440 seconds; the apparent pause was sustained work, not a hang.
+- ArcGIS Earth then opened the same native TPKX directly from the router Samba share over Wi-Fi and rendered/navigated the map successfully.
+- Field architecture decision: **router only**. The router supplies storage/network/file sharing; ArcGIS Earth supplies the GIS intelligence.
+- Removed the active field-server appliance direction from current planning.
+- Added router-only architecture and historical evidence records.
+
+## Consumer-router test branch — 2026-08-17 — SUPERSEDED BY LIVE PROOF
+
+- Defined a consumer-router + USB-SSD experiment for offline ArcGIS Earth map delivery.
+- Established Feeder / Eater terminology:
+  - Eaters consume maps in the field;
+  - Feeder maintains the approved SSD library at basecamp.
+- Defined the controlled acceptance ladder: Ethernet baseline, Wi-Fi comparison, real ArcGIS Earth test, then additional clients/mobile.
+- Governing design rule established: changing or swapping map libraries should not require GIS-specific router reconfiguration.
+
+## v0.2.1 TEST — 2026-08-16 — HISTORICAL WINDOWS WMTS PROOF
+
+- Fixed stale-map reuse by assigning every selected MBTiles a unique service identity.
+- Added unique WMTS layer identifiers, GetCapabilities URLs, and REST tile URLs.
+- Confirmed selectable MBTiles GUI drives the actual served map.
 - LIVE-PROVEN with three different substantial raster MBTiles on ArcGIS Earth Mobile.
-- LIVE-PROVEN with a large Lago panorama delivered smoothly over USB tether.
+- LIVE-PROVEN with a large Lago panorama delivered smoothly over Android USB tether.
 - Outside Internet removed while local map delivery remained functional.
-- Current operator guidance established: deliberate pan/zoom is smooth; rapid repeated navigation can outrun the current mobile path.
+- This remains important development history but is not the current router-only field architecture.
 
 ## v0.2.0 TEST — 2026-08-16
 
-- Replaced the hard-coded 174-tile proof map with a GUI file selector.
+- Replaced the hard-coded small fixture with a GUI file selector.
 - Added CHOOSE MBTILES, START HTTPS MAP FOUNTAIN, OPEN QR, and STOP SERVER controls.
-- Preserved the proven Windows → USB tether → Android → ArcGIS Earth Mobile architecture.
 - Defect discovered live: different selected maps reused the same WMTS identity/tile URLs, allowing ArcGIS Earth Mobile to show stale cached content. Fixed in v0.2.1.
 
 ## v0.1.5 TEST — 2026-08-16
@@ -46,17 +70,16 @@
 
 - First attempt to add HTTPS around the proven HTTP WMTS path.
 - Failed on the Windows target because the build expected `openssl.exe` to be present.
-- Failure was visible and corrected rather than worked around manually.
+- Failure was visible and corrected rather than hidden.
 
 ## v0.1.3 TEST — 2026-08-16
 
 - Added offline QR generation and live URL preservation.
-- Android rejected the tested HTTP QR path and requested HTTPS, leading directly to the HTTPS branch.
+- Android rejected the tested HTTP QR path and requested HTTPS, leading to the HTTPS branch.
 
 ## v0.1.2 TEST — 2026-08-16
 
 - Added direct Windows Remote NDIS / USB-tether adapter detection.
-- Stopped guessing among Wi-Fi, Ethernet, VPN, and tether addresses.
 - Correctly detected the live PC-side USB address `10.13.166.115`.
 
 ## v0.1.1 TEST — 2026-08-16
@@ -76,6 +99,8 @@
 
 ## Origin
 
-Map Fountain emerged from Offline GeoStack / Rasta Pyramid Factory testing when ArcGIS Earth Mobile exposed both local-file and URL data-ingestion paths. The first goal was narrow: determine whether a phone could consume map tiles live from a PC/SSD over a private local link without copying an entire mother map onto the device.
+Map Fountain emerged from Offline GeoStack / Rasta Pyramid Factory testing as a way to keep large map libraries local and let ArcGIS Earth consume only what the operator needs.
 
-That question is now answered: **yes, over the tested USB-tether HTTPS WMTS path.**
+The 2026-08-17 router proof simplified that idea to its core:
+
+> **Put the native maps on the SSD, let the router share them, and let ArcGIS Earth read them directly.**
