@@ -1,5 +1,23 @@
 # Map Fountain — Changelog
 
+## Map Tank branch — 2026-08-17 — DESIGNED / BENCH TEST PENDING
+
+- Defined **Map Tank** as a consumer-router + USB-SSD deployment experiment for offline ArcGIS Earth map delivery.
+- First physical test hardware: **GL.iNet Flint 2 (GL-MT6000)**; hardware received 2026-08-17.
+- Preserved the existing Windows Map Fountain v0.2.1 USB-tether path as the current LIVE-PROVEN baseline.
+- Defined a **Feeder / Eater** operating model:
+  - **Eaters** are field clients consuming maps read-only where practical;
+  - **Feeder** is the basecamp client that refreshes the SSD against an approved master map library.
+- Defined the first controlled acceptance ladder:
+  1. Ethernet storage baseline with Wireshark;
+  2. direct ArcGIS Earth PC TPKX-over-share test if accepted;
+  3. Wi-Fi repeat with the same map/storage baseline;
+  4. simulated tile-consumption testing on Windows if useful;
+  5. ArcGIS Earth Mobile experiments after the storage/network behavior is understood.
+- Candidate mobile Map Tank paths recorded without claiming proof: static WMTS, thin Android bridge, whole-file TPKX, and PMTiles/byte-range fallback.
+- Governing design rule: keep the router dumb; changing or swapping map libraries should not require GIS-specific router reconfiguration.
+- Added `docs/MAP_TANK_TEST_PLAN_2026-08-17.md`.
+
 ## v0.2.1 TEST — 2026-08-16 — LIVE-PROVEN
 
 - Fixed stale-map reuse after v0.2.0 by assigning every selected MBTiles a unique service identity.
