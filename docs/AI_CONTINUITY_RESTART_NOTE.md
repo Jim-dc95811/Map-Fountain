@@ -4,9 +4,9 @@ If coming to this repository cold, establish the following before changing code 
 
 ## Current project identity
 
-**Map Fountain is now a router-only offline map-delivery architecture for ArcGIS Earth.**
+**Map Fountain is the router-only offline map-delivery architecture for ArcGIS Earth.**
 
-Current live-proven field chain:
+Current live-proven Windows chain:
 
 ```text
 native TPKX on USB SSD
@@ -19,7 +19,13 @@ native TPKX on USB SSD
 
 The router is deliberately dumb. It provides storage, DHCP/local networking, and file sharing. ArcGIS Earth supplies the GIS intelligence.
 
-Do not reintroduce a field GIS-server appliance merely because older project history contains server experiments.
+**Do not reintroduce a field GIS-server appliance merely because older project history contains server experiments.**
+
+The canonical architecture drawing is:
+
+`docs/arcgis_system_router_flowchart_2026-08-17.svg`
+
+It uses the Factory / PC / Android flowchart layout. Do not replace it with the superseded hub-and-spoke diagram.
 
 ---
 
@@ -40,25 +46,27 @@ Proven results:
 
 Current status label:
 
-**ROUTER-ONLY MAP FOUNTAIN — LIVE-PROVEN**
+**ROUTER-ONLY MAP FOUNTAIN — LIVE-PROVEN ON WINDOWS ARCGIS EARTH**
 
 ---
 
 ## Critical chronology
 
-### 2026-08-16 — Windows-hosted WMTS proof
+### 2026-08-16 — Windows-hosted WMTS precursor
 
 A Windows program served raster MBTiles over local HTTPS WMTS to ArcGIS Earth Mobile through Android USB tether. That branch proved local/offline mobile tile delivery, HTTPS, QR ingestion, per-map cache identity, and operation with outside Internet removed.
 
-Treat that as important engineering history and a reusable compatibility technique, not the current field architecture.
+Treat that as important engineering history and a reusable compatibility technique, **not the current field architecture**.
 
-### 2026-08-17 — consumer-router hypothesis
+### 2026-08-17 — consumer-router proof
 
 A GL.iNet Flint 2 with USB SSD was tested as a deliberately dumb map reservoir.
 
 The first small TPKX benchmark proved Samba access but also exposed Windows cache contamination.
 
-The benchmark was corrected in v0.1.1 to run random seek first, then multi-client random reads, then the sequential sample.
+The benchmark was corrected to run random seek first, then multi-client random reads, then the sequential sample.
+
+The historical benchmark filename contains `MAP_TANK`; use that name only when identifying the exact test artifact. The current architecture/product name is **Map Fountain**.
 
 ### 2026-08-17 — large Ethernet proof
 
@@ -95,15 +103,16 @@ This is the decisive acceptance event. The storage benchmark proved the hose; Ar
 ## Do not regress
 
 - Do not add a field GIS server unless the real target proves it is required.
+- Do not revive Raspberry Pi / Pi-server architecture in active Map Fountain documentation.
 - Do not make public Internet connectivity mandatory.
 - Do not make normal Eaters use manual static IP configuration.
-- Do not unpack/rerender native TPKX in the router.
+- Do not unpack or rerender native TPKX in the router.
 - Do not confuse Windows cache/read-ahead throughput with raw router speed.
 - Do not optimize a guessed bottleneck before real ArcGIS Earth behavior exposes one.
 - Preserve read-only field consumption where practical.
 - Preserve controlled-test discipline: one major variable at a time.
 - Preserve the 2026-08-17 evidence hashes and benchmark numbers.
-- Treat ArcGIS Earth as the final acceptance authority.
+- Treat the intended ArcGIS Earth runtime as the final acceptance authority.
 
 ---
 
@@ -128,14 +137,19 @@ ArcGIS Earth Wi-Fi success screenshot
 
 ---
 
-## Current next gates
+## Current next gate
 
-1. Repeat the ArcGIS Earth application test over Ethernet for direct comparison.
-2. Characterize real ArcGIS Earth pan/zoom behavior over Wi-Fi.
-3. Test cold close/reopen and Wi-Fi reconnect behavior.
-4. Test multiple simultaneous Eaters.
-5. Test the simplest router-only ArcGIS Earth Mobile path separately.
-6. Build the basecamp Feeder only after consumption behavior is stable.
+**Android / ArcGIS Earth Mobile on the router-only architecture.**
+
+The Windows path is proven. Mobile must now earn its own real-target acceptance without assuming that the old Windows WMTS server needs to return.
+
+After Android:
+
+1. direct ArcGIS Earth Ethernet application comparison;
+2. Wi-Fi navigation characterization;
+3. cold close/reopen and Wi-Fi reconnect;
+4. multiple simultaneous Eaters;
+5. basecamp Feeder after consumption behavior is stable.
 
 ---
 
@@ -158,8 +172,8 @@ Router-attached storage and private local delivery of finished map products.
 ## Cold-start reading order
 
 1. `README.md`
-2. `docs/MAP_TANK_TEST_PLAN_2026-08-17.md`
-3. `docs/ACCEPTANCE_RECORD.md`
+2. `docs/MAP_FOUNTAIN_ROUTER_ACCEPTANCE_2026-08-17.md`
+3. `docs/PROJECT_STATUS_2026-08-17.md`
 4. `docs/TECHNICAL_ARCHITECTURE.md`
 5. `CHANGELOG.md`
 6. `ROADMAP.md`
