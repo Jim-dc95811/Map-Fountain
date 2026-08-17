@@ -2,7 +2,7 @@
 
 ## Executive state
 
-**Map Fountain is now LIVE-PROVEN as a router-only offline field map appliance for ArcGIS Earth.**
+**Map Fountain is LIVE-PROVEN as a router-only offline field map appliance for Windows ArcGIS Earth.**
 
 Current proven chain:
 
@@ -15,7 +15,13 @@ native TPKX on USB SSD
 → ArcGIS Earth
 ```
 
-The router provides storage/network/file sharing only. ArcGIS Earth provides the GIS intelligence.
+The router provides storage, local networking, DHCP, and file sharing only. ArcGIS Earth provides the GIS intelligence.
+
+The canonical system drawing is the **Factory / PC / Android flowchart**:
+
+`arcgis_system_router_flowchart_2026-08-17.svg`
+
+Do not replace it with the superseded hub-and-spoke drawing.
 
 ## Decisive live proof
 
@@ -30,17 +36,17 @@ Specimen:
 
 ### Ethernet
 
-- random: 25.33 MiB/s
-- random p95: 9.98 ms
-- four-client aggregate: 51.21 MiB/s
-- sequential: 42.58 MiB/s
+- random: **25.33 MiB/s**
+- random p95: **9.98 ms**
+- four-client aggregate: **51.21 MiB/s**
+- sequential: **42.58 MiB/s**
 
 ### Wi-Fi
 
-- random: 5.19 MiB/s
-- random p95: 50.56 ms
-- four-client aggregate: 5.31 MiB/s
-- sequential: 6.14 MiB/s
+- random: **5.19 MiB/s**
+- random p95: **50.56 ms**
+- four-client aggregate: **5.31 MiB/s**
+- sequential: **6.14 MiB/s**
 
 The Wi-Fi 536,870,912-byte sequential logical sample completed in 83.440 seconds.
 
@@ -48,16 +54,21 @@ The Wi-Fi 536,870,912-byte sequential logical sample completed in 83.440 seconds
 
 Field map delivery is **router only**.
 
-Do not revive an active field GIS-server appliance from older project history unless real ArcGIS Earth evidence proves one is necessary.
+Do not revive Raspberry Pi, Pi-server, or other active field GIS-server appliance architecture from older project history unless real target evidence proves a compatibility layer is unavoidable.
 
-## Current next gates
+## Immediate next gate
+
+**ArcGIS Earth Mobile on the router-only architecture.**
+
+The Android client must now be tested against the router-attached SSD over private Wi-Fi. Do not assume the old Windows WMTS server must return. Start from the simplest path the mobile client can actually consume and let the real target decide.
+
+After Android:
 
 1. ArcGIS Earth direct-network comparison over Ethernet.
 2. Real ArcGIS Earth navigation characterization over Wi-Fi.
 3. Cold close/reopen and Wi-Fi reconnect.
 4. Multiple simultaneous Eaters.
-5. Simplest router-only ArcGIS Earth Mobile path.
-6. Basecamp Feeder after consumption behavior is stable.
+5. Basecamp Feeder after consumption behavior is stable.
 
 ## Evidence hashes
 
