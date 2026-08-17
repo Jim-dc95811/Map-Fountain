@@ -1,89 +1,68 @@
-# Map Fountain — HTTPS Certificate Note
+# Map Fountain — Historical HTTPS Certificate Note
 
-## Why this document exists
+## Status
 
-The current live-proven v0.2.1 TEST architecture uses HTTPS because the Android / ArcGIS Earth Mobile path being tested requested HTTPS for the QR/service workflow.
+**HISTORICAL — 2026-08-16 Windows-hosted WMTS experiment.**
 
-The bench proof succeeded, but the certificate arrangement is **not yet a finished consumer design**.
+The current router-only Map Fountain field path does **not** require HTTPS certificates, a Windows WMTS server, or Android USB tethering for the proven Windows/TPKX workflow.
+
+This document is retained only because the earlier mobile experiment may remain useful as a compatibility reference while the router-only Android path is investigated.
 
 ---
 
-## Live-proven bench identity
+## Historical live-proven bench identity
 
 Observed PC-side USB-tether IPv4:
 
 `10.13.166.115`
 
-The successful HTTPS test used a server certificate whose Subject Alternative Name matched that IP address.
+The successful historical HTTPS test used a server certificate whose Subject Alternative Name matched that IP address.
 
-The v0.2.1 source therefore still checks that the active Remote NDIS tether address equals:
-
-`10.13.166.115`
-
-If it does not match, the server stops instead of silently presenting a certificate for the wrong address.
+The old v0.2.1 source checked that the active Remote NDIS tether address equaled that test address and stopped on mismatch rather than silently presenting the wrong certificate.
 
 ---
 
 ## What is intentionally not in GitHub
 
-The public repository does **not** contain the private TLS server key used during the live proof.
+The public repository does **not** contain the private TLS server key used during the historical live proof.
 
 Do not publish or commit:
 
-- `RASTA_USB_SERVER.key`;
+- private TLS server keys;
 - private CA keys;
 - deployed private keys;
 - credentials.
 
-The `.gitignore` rules deliberately block certificate/key material under `HTTPS CERT/` except the explanatory README.
+---
+
+## Historical lesson
+
+The first HTTPS attempt failed because the Windows target did not have the expected OpenSSL executable. The next build removed that target dependency by preparing matching local certificate material ahead of time.
+
+That allowed ArcGIS Earth Mobile to consume the local HTTPS WMTS service during the 2026-08-16 experiment.
 
 ---
 
-## Why v0.1.4 failed
+## Current architecture boundary
 
-The first HTTPS branch expected `openssl.exe` to be available on the Windows target.
+Current field architecture:
 
-It was not.
+```text
+USB SSD
+→ consumer router
+→ Samba / SMB
+→ private Wi-Fi or Ethernet
+→ ArcGIS Earth
+```
 
-The target displayed:
-
-`OpenSSL was not found.`
-
-That build was rejected rather than turning OpenSSL installation into an operator side quest.
-
----
-
-## Why v0.1.5 / v0.2.x worked
-
-For the live proof, matching local certificate material was created ahead of time and packaged with the private test build.
-
-That removed the OpenSSL dependency from the Windows target and allowed the HTTPS service to start.
-
-The phone accepted the resulting trusted local path and ArcGIS Earth Mobile displayed the map.
-
----
-
-## What the production solution needs
-
-The next production-oriented certificate design should satisfy all of these:
-
-1. no public Internet required;
-2. no operator command-line certificate work;
-3. automatic detection of the actual tether address;
-4. server certificate valid for the actual local endpoint;
-5. predictable Android trust behavior;
-6. no private key committed to GitHub;
-7. clean recovery when USB/network addressing changes;
-8. no weakening of TLS verification just to make the warning disappear.
-
-Potential implementation choices should be evaluated against those requirements rather than chosen for elegance alone.
+Do **not** turn the old certificate lifecycle problem back into an active productization requirement unless the router-only Android acceptance work proves that an HTTPS compatibility service is actually necessary.
 
 ---
 
 ## Evidence status
 
-**HTTPS local WMTS delivery: LIVE-PROVEN.**
+Historical HTTPS local WMTS delivery: **LIVE-PROVEN HISTORY**.
 
-**General automatic certificate/IP lifecycle: NOT YET FINISHED.**
+Current router-only Windows TPKX path: **LIVE-PROVEN and certificate-free**.
 
-Do not conflate those two statements.
+Router-only Android path: **NEXT ACCEPTANCE GATE**.
