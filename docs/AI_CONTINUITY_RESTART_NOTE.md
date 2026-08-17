@@ -1,152 +1,174 @@
 # Map Fountain — AI / Maintainer Restart Note
 
-If coming to this repository cold, establish the following before changing code.
+If coming to this repository cold, establish the following before changing code or architecture.
 
-## Project identity
+## Current project identity
 
-**Map Fountain** is a standalone sibling project created from Offline GeoStack / Rasta Pyramid Factory mobile testing.
+**Map Fountain is now a router-only offline map-delivery architecture for ArcGIS Earth.**
 
-Its job is **local raster-map delivery**, not map manufacture, GNSS, PRAVE, or arbitrary-raster pyramid generation.
-
-Current role:
+Current live-proven field chain:
 
 ```text
-raster MBTiles on Windows PC / SSD
-→ local HTTPS WMTS
-→ private USB tether
-→ ArcGIS Earth Mobile
+native TPKX on USB SSD
+→ GL.iNet Flint 2
+→ Samba / SMB
+→ Ethernet or Wi-Fi
+→ Windows
+→ ArcGIS Earth
 ```
 
-The live-proven v0.2.1 GUI still displays the historical working title `RASTA USB MAP FOUNTAIN`. Do not rewrite working code merely to remove that lineage unless a new build is being deliberately created and tested.
+The router is deliberately dumb. It provides storage, DHCP/local networking, and file sharing. ArcGIS Earth supplies the GIS intelligence.
+
+Do not reintroduce a field GIS-server appliance merely because older project history contains server experiments.
 
 ---
 
-## Current proven baseline — 2026-08-16
+## Current proven baseline — 2026-08-17
 
-`Rasta USB Map Fountain v0.2.1 TEST`
+Large specimen:
 
-**Status: LIVE-PROVEN** for:
+- `ESG1N.tpkx`
+- 26,174,899,216 bytes by the benchmark script
+- 25,561,426 KB Windows File Explorer identification
 
-- Windows raster MBTiles serving;
-- Android USB tether / Remote NDIS;
-- HTTPS WMTS;
-- QR loading into ArcGIS Earth Mobile;
-- operation with outside Internet removed;
-- GUI selection of different MBTiles;
-- unique per-map WMTS identities preventing stale-map reuse;
-- three different substantial MBTiles;
-- large Lago panorama.
+Proven results:
 
-Current operator observation:
+- large TPKX open/stat over router Samba: PASS;
+- Ethernet large-file random/sequential benchmark: PASS;
+- Wi-Fi large-file random/sequential benchmark: PASS;
+- ArcGIS Earth opened the network-hosted TPKX over Wi-Fi and rendered/navigated it successfully: PASS.
 
-> deliberate pan/zoom is smooth; rapid repeated navigation can outrun the current path.
+Current status label:
+
+**ROUTER-ONLY MAP FOUNTAIN — LIVE-PROVEN**
 
 ---
 
 ## Critical chronology
 
-### v0.1.0
+### 2026-08-16 — Windows-hosted WMTS proof
 
-Tiny 174-tile QGIS MBTiles fixture proved live tile requests from Android over USB tether.
+A Windows program served raster MBTiles over local HTTPS WMTS to ArcGIS Earth Mobile through Android USB tether. That branch proved local/offline mobile tile delivery, HTTPS, QR ingestion, per-map cache identity, and operation with outside Internet removed.
 
-### v0.1.1
+Treat that as important engineering history and a reusable compatibility technique, not the current field architecture.
 
-Fixed BAT launcher that flashed/closed because the generated batch file contained bad line breaks.
+### 2026-08-17 — consumer-router hypothesis
 
-### v0.1.2
+A GL.iNet Flint 2 with USB SSD was tested as a deliberately dumb map reservoir.
 
-Stopped guessing network addresses. Detected the active Windows Remote NDIS tether adapter directly.
+The first small TPKX benchmark proved Samba access but also exposed Windows cache contamination.
 
-### v0.1.3
+The benchmark was corrected in v0.1.1 to run random seek first, then multi-client random reads, then the sequential sample.
 
-Generated QR for the live URL. Phone requested HTTPS for the tested QR path.
+### 2026-08-17 — large Ethernet proof
 
-### v0.1.4
+`ESG1N.tpkx` passed the large-file benchmark through Ethernet.
 
-First HTTPS attempt failed because target Windows machine did not have OpenSSL where the build expected it.
+Key values:
 
-### v0.1.5
+- random: 25.33 MiB/s;
+- random p95: 9.98 ms;
+- four-client aggregate: 51.21 MiB/s;
+- sequential: 42.58 MiB/s.
 
-Pre-generated matching local HTTPS certificate material for the observed tether address. HTTPS worked.
+### 2026-08-17 — same file over Wi-Fi
 
-### v0.2.0
+Same router, same SSD, same TPKX, same benchmark; Ethernet changed to Wi-Fi.
 
-Added normal GUI map selection. Defect: changing MBTiles could still display the old small fixture because service/tile identity was reused.
+Key values:
 
-### v0.2.1
+- random: 5.19 MiB/s;
+- random p95: 50.56 ms;
+- four-client aggregate: 5.31 MiB/s;
+- sequential: 6.14 MiB/s.
 
-Fixed the stale-map defect with unique service IDs and tile URL paths. Multiple large MBTiles then passed live.
+The long 83.440-second sequential phase completed successfully.
+
+### 2026-08-17 — real ArcGIS Earth proof
+
+ArcGIS Earth opened the same TPKX directly through the Samba path over Wi-Fi and rendered the Jacksonville map.
+
+This is the decisive acceptance event. The storage benchmark proved the hose; ArcGIS Earth proved the actual field use.
 
 ---
 
 ## Do not regress
 
-- Do not hard-code the small 174-tile test MBTiles into the normal product.
-- Do not reuse one WMTS identity for different maps.
+- Do not add a field GIS server unless the real target proves it is required.
 - Do not make public Internet connectivity mandatory.
-- Do not require operators to type the full WMTS URL as the normal workflow when QR is available.
-- Do not publish private TLS keys.
-- Do not silently accept a certificate/IP mismatch.
-- Do not claim Wi-Fi transport is proven; USB tether is the live-proven transport.
-- Do not claim rapid navigation is solved.
-- Do not rebuild map cartography inside Map Fountain; serve the existing raster pyramid.
-- Do not treat TPKX as obsolete. TPKX and Map Fountain are complementary deployment paths.
+- Do not make normal Eaters use manual static IP configuration.
+- Do not unpack/rerender native TPKX in the router.
+- Do not confuse Windows cache/read-ahead throughput with raw router speed.
+- Do not optimize a guessed bottleneck before real ArcGIS Earth behavior exposes one.
+- Preserve read-only field consumption where practical.
+- Preserve controlled-test discipline: one major variable at a time.
+- Preserve the 2026-08-17 evidence hashes and benchmark numbers.
+- Treat ArcGIS Earth as the final acceptance authority.
 
 ---
 
-## Current known-good environment
+## Current evidence fingerprints
 
-- Windows 10/11 64-bit
-- Python 3.14.5 established known-good
-- ArcGIS Earth Mobile on Android
-- raster MBTiles
-- PNG or JPEG tile payloads
-- EPSG:3857 Google-compatible raster tile pyramid
-- `python-qrcode` 8.2 for source-run QR generation
+```text
+Ethernet benchmark screenshot
+710e19a0676ada1729a35e13693b8ae81d0527fc3ba654a2da32288ac58244af
 
-The live packaged test vendored the QR library.
+Ethernet PCAP
+3eda0dc91dee83ac12a96912d8f7264e846c7393c3983de34970b5571a622f0f
 
----
+Wi-Fi benchmark screenshot
+631af7d06f433964175e1c3dc414767cc4c08f98af006406d8068be3b081ba3f
 
-## Current largest gap
+Wi-Fi PCAP
+67db0a4dfee9519f933f0fc2e550da69634b293c815cd4b2d81413b38c60f1d4
 
-**HTTPS certificate/IP lifecycle.**
-
-The live bench build used certificate material tied to PC tether address `10.13.166.115`.
-
-The public repo intentionally omits the private key.
-
-Do not mistake the absence of the private key in GitHub for loss of the architecture; it is a deliberate security boundary.
+ArcGIS Earth Wi-Fi success screenshot
+8592abb26f9025baf665e4c4174670ba3a2bb433db96cbd092dd27355a9fd840
+```
 
 ---
 
-## Relationship to other repositories
+## Current next gates
+
+1. Repeat the ArcGIS Earth application test over Ethernet for direct comparison.
+2. Characterize real ArcGIS Earth pan/zoom behavior over Wi-Fi.
+3. Test cold close/reopen and Wi-Fi reconnect behavior.
+4. Test multiple simultaneous Eaters.
+5. Test the simplest router-only ArcGIS Earth Mobile path separately.
+6. Build the basecamp Feeder only after consumption behavior is stable.
+
+---
+
+## Relationship to sibling repositories
 
 ### Offline GeoStack
 
-Master operational project. Its TPKX Map Factory v1.2 TEST adds `TPKX / MBTiles / Both` because MBTiles became operationally useful for Map Fountain.
+Master operational field-mapping project: ArcGIS Earth runtime, TPKX manufacturing, GNSS, PRAVE/F22/QR integration, and offline doctrine.
 
 ### Rasta Pyramid Factory
 
-General giant-raster pyramid manufacturer. Rasta can create MBTiles that Map Fountain can serve.
+General high-resolution raster-pyramid manufacturer producing MBTiles, TPKX, or both.
+
+### Map Fountain
+
+Router-attached storage and private local delivery of finished map products.
 
 ---
 
 ## Cold-start reading order
 
 1. `README.md`
-2. `docs/PROJECT_STATUS_2026-08-16.md`
+2. `docs/MAP_TANK_TEST_PLAN_2026-08-17.md`
 3. `docs/ACCEPTANCE_RECORD.md`
 4. `docs/TECHNICAL_ARCHITECTURE.md`
-5. `docs/HTTPS_CERTIFICATE_NOTE.md`
-6. `CHANGELOG.md`
-7. `ROADMAP.md`
-8. newest commits/issues
+5. `CHANGELOG.md`
+6. `ROADMAP.md`
+7. newest commits/issues
 
-Report current evidence status before changing behavior.
+Report the current evidence state before changing behavior.
 
 ---
 
 ## Governing principle
 
-> **The viewer asks for tiles. The fountain serves them. Keep everything between those two points local, simple, and observable.**
+> **Keep the router dumb. Keep the maps native. Let ArcGIS Earth do the GIS work.**
