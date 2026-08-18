@@ -1,37 +1,48 @@
 # Contributing to Map Fountain
 
-Map Fountain is evidence-driven. A plausible architecture is not enough; the real ArcGIS Earth target decides acceptance.
+Map Fountain is evidence-driven. A plausible architecture is not enough; the real target decides acceptance.
+
+## Current project state
+
+**LIVE-PROVEN / PARKED from the primary personal-phone deployment path.**
+
+The project proved both:
+
+```text
+Windows:
+USB SSD → Flint 2 → SMB → ArcGIS Earth → native TPKX
+
+Android router experiment:
+Static REST WMTS → Flint 2 local HTTPS → ArcGIS Earth Mobile
+```
+
+The larger project then simplified normal personal-phone deployment to direct TPKX on microSD.
+
+Current mobile deployment work belongs in:
+
+`Jim-dc95811/Android-Field-Maps-and-ArcGIS-Earth-`
 
 ## Before changing architecture or documentation
 
 Read:
 
 1. `README.md`
-2. `docs/PROJECT_STATUS_2026-08-17.md`
-3. `docs/MAP_FOUNTAIN_ROUTER_ACCEPTANCE_2026-08-17.md`
+2. `docs/MAP_FOUNTAIN_ROUTER_ACCEPTANCE_2026-08-17.md`
+3. `docs/STATIC_REST_WMTS_ANDROID_ACCEPTANCE_2026-08-17.md`
 4. `docs/ACCEPTANCE_RECORD.md`
-5. `docs/TECHNICAL_ARCHITECTURE.md`
-6. `docs/AI_CONTINUITY_RESTART_NOTE.md`
-7. `ROADMAP.md`
+5. `docs/AI_CONTINUITY_RESTART_NOTE.md`
+6. `ROADMAP.md`
+7. current Offline GeoStack README
 
-Canonical drawing:
+## Reopen before extending
 
-`docs/arcgis_system_router_flowchart_2026-08-17.svg`
+Do not add new Map Fountain features merely because the code or architecture is interesting.
 
-## Current architecture boundary
+Active engineering should resume only when a real use case reopens the appliance, such as:
 
-The live-proven Windows path is:
-
-```text
-USB SSD
-→ GL.iNet Flint 2
-→ Samba / SMB
-→ private Wi-Fi or Ethernet
-→ ArcGIS Earth
-→ native TPKX
-```
-
-Do not reintroduce Raspberry Pi, Pi-server, or another active field GIS-server appliance by default. If a future target requires compatibility logic, prove that requirement first and add the smallest layer that solves the demonstrated problem.
+- Starlink/basecamp shared storage / poor-man's NAS;
+- measured multi-client shared-map requirement;
+- a real failure of direct removable storage that shared storage solves better.
 
 ## Preserve proof status
 
@@ -42,20 +53,23 @@ Use explicit labels:
 - LIVE-OBSERVED
 - LIVE-PROVEN
 
-Do not silently promote a path because it works in theory or on a developer machine.
+Do not silently promote or demote a path.
+
+`PARKED` means a live-proven capability is not currently the preferred deployment path. It does not mean the proof failed.
 
 ## Do not regress
 
 - public Internet must not become a core dependency;
-- native TPKX must remain native on the proven router path;
-- ordinary Eaters should stay on DHCP;
+- native TPKX must remain native on the proven Windows router path;
+- ordinary clients should stay on DHCP;
 - field consumption should remain read-only where practical;
 - packet evidence and real-viewer behavior outrank assumptions;
 - cached/read-ahead throughput must not be mislabeled as raw router speed;
-- the current immediate gate is ArcGIS Earth Mobile on the router-only architecture;
-- historical Windows WMTS source is lineage, not the active product.
+- historical Windows WMTS source remains lineage, not the active product;
+- the current personal-phone architecture must not be forced back through Map Fountain without a real operational reason;
+- REST manufacturing optimization should remain paused unless Map Fountain is deliberately reopened.
 
-## Evidence for changes
+## Evidence for reopened changes
 
 For changes affecting runtime behavior, include as applicable:
 
@@ -63,7 +77,7 @@ For changes affecting runtime behavior, include as applicable:
 - exact client/viewer and operating system;
 - exact map artifact identity and Windows File Explorer size when relevant;
 - Ethernet versus Wi-Fi transport;
-- whether outside Internet was present or removed;
+- Starlink/public Internet present versus removed if testing the future basecamp role;
 - Wireshark/packet evidence when network behavior matters;
 - screenshots/video when visual behavior matters;
 - what was directly observed versus inferred.
@@ -71,3 +85,7 @@ For changes affecting runtime behavior, include as applicable:
 ## Security
 
 Never include live credentials, private keys, confidential map products, router administrator secrets, or sensitive packet contents in public commits/issues.
+
+## Governing rule
+
+> **Preserve the proof. Reopen the project only when shared storage is actually the better tool.**
