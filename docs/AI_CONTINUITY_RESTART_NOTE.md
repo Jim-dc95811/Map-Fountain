@@ -1,26 +1,16 @@
 # Map Fountain — AI / Maintainer Restart Note
 
-If coming to this repository cold, establish the following before changing code or architecture.
-
 ## Current project identity
 
-**Map Fountain is the router-only offline map-delivery architecture for ArcGIS Earth on Windows and Android.**
+**Map Fountain is a LIVE-PROVEN router/storage delivery experiment that is currently PARKED from the primary personal-phone deployment path.**
 
-The router is deliberately dumb. It provides storage, DHCP/private networking, Samba for Windows, and a local HTTPS/WebDAV file endpoint for Android. ArcGIS Earth supplies the GIS intelligence.
+Do not interpret `PARKED` as failure.
 
-**Do not reintroduce a field GIS-server appliance merely because older project history contains server experiments.**
-
-Canonical architecture drawing:
-
-`docs/arcgis_system_router_flowchart_2026-08-17.svg`
-
-Use the Factory / PC / Android flowchart. Do not restore the superseded hub-and-spoke / Pi-server architecture.
+It proved both of its core runtime paths. The larger project then found a simpler normal-user mobile deployment: native TPKX directly on removable phone storage.
 
 ---
 
-## Current live-proven field paths — 2026-08-17
-
-### Windows ArcGIS Earth
+## Proven Windows path
 
 ```text
 native TPKX on USB SSD
@@ -39,7 +29,9 @@ Large accepted specimen:
 
 ArcGIS Earth opened the network-hosted TPKX over Wi-Fi and rendered/navigated it successfully.
 
-### Android ArcGIS Earth Mobile
+---
+
+## Proven Android router path
 
 Accepted flavor:
 
@@ -56,63 +48,91 @@ Static REST WMTS folder on USB SSD
 
 Observed acceptance sequence:
 
-- Android reached the Flint HTTPS endpoint.
-- Exact file GET from SSD succeeded.
-- `WMTSCapabilities.xml` exact-file GET succeeded.
-- ArcGIS Earth Mobile accepted that URL and rendered the map.
-- ArcGIS Earth app cache was cleared.
-- App was force-stopped/reopened.
-- The same router-hosted map rendered again.
+- Android reached the Flint HTTPS endpoint;
+- exact file GET from SSD succeeded;
+- `WMTSCapabilities.xml` exact-file GET succeeded;
+- ArcGIS Earth Mobile accepted the URL and rendered the map;
+- ArcGIS Earth app cache was cleared;
+- app was force-stopped/reopened;
+- the same router-hosted map rendered again.
 
 No Python on Android. No helper app. No QGIS Server. No Windows map server. No Raspberry Pi.
 
-Slow deliberate pan/zoom works; rapid gestures may stall or behave erratically. Treat this as performance characterization, not architecture failure.
-
-Detailed Android record:
-
-`docs/STATIC_REST_WMTS_ANDROID_ACCEPTANCE_2026-08-17.md`
-
 ---
 
-## Critical manufacturing rule
+## Current deployment direction moved elsewhere
 
-**Keep compact masters compact. Expand only the Android deployment artifact.**
+The preferred personal-phone path is now:
 
 ```text
-QGIS / Factory render
-        ↓
-MBTiles compact raster master
-        ├──→ TPKX for Windows
-        └──→ Static REST WMTS expanded tree for Android
+TPKX
+→ microSD card
+→ Android
+→ ArcGIS Field Maps / ArcGIS Earth
 ```
 
-The accepted Android test converter copied raster tile payloads out of MBTiles byte-for-byte, flipped TMS row numbering to WMTS top-origin rows, and generated `WMTSCapabilities.xml`.
+That work lives in:
 
-Static REST WMTS means giant directory trees. That is the cost of removing the active field GIS server.
+`Jim-dc95811/Android-Field-Maps-and-ArcGIS-Earth-`
 
-The expanded WMTS tree is a deployment artifact, not the preferred archive/master format.
+Do not reinsert Map Fountain into that normal-user path simply because this repo contains a successful router proof.
 
 ---
 
-## Production Factory next gate
+## Why Map Fountain is parked
 
-Do not redesign the proven runtime path. Improve manufacturing around it.
+The target users often carry personal Android phones.
 
-Required planning:
+Direct removable storage removes:
 
-1. Static REST WMTS output mode.
-2. Short map/service IDs.
-3. Tile-count preflight.
-4. Payload/free-space preflight.
-5. Direct-to-removable-SSD build to avoid a second millions-of-files copy.
-6. Unique/versioned identity for cache safety.
-7. Automatic capabilities generation.
-8. Automatic QR generation.
-9. Post-build verification.
-10. Whole-map delete/replace workflow.
-11. Larger/denser Android performance tests.
+- router association;
+- network dependency;
+- service URLs;
+- QR service loading;
+- server-shaped concepts;
+- shared-storage setup.
 
-The exact final Factory GUI and deployment root-folder names are not frozen yet.
+If local TPKX solves the job, the simpler path wins.
+
+---
+
+## Static REST manufacturing branch
+
+Map Fountain's Android proof led to large Static REST WMTS manufacturing experiments.
+
+A production-scale v1.3 Factory run exposed serious file-count/packaging overhead with hundreds of thousands of expanded files.
+
+`TPKX_MAP_FACTORY_v1_4_0_TEST` then moved the experimental transport to a compact `.restmap` seed that expands the runtime WMTS tree at the final SSD.
+
+Small lifecycle fixture: SELF-TESTED.
+
+Current disposition: preserve the branch, but do not continue optimizing it merely because it exists. Reopen only if a real Map Fountain deployment requires it.
+
+---
+
+## Possible future role — Starlink / basecamp NAS
+
+The strongest likely reopening path is:
+
+```text
+Starlink
+→ Flint 2 WAN
+→ USB SSD
+→ SMB / Wi-Fi / Ethernet
+→ basecamp laptops / local clients
+```
+
+In that role Map Fountain becomes a poor-man's NAS / incident map reservoir.
+
+Useful doctrine:
+
+- outside Internet can enhance manufacturing/refresh;
+- the local SSD/LAN still works if Starlink disappears;
+- the router remains dumb;
+- map products remain ordinary files;
+- shared storage is used because shared storage is actually useful.
+
+This role is **FUTURE / NOT YET REOPENED**.
 
 ---
 
@@ -132,43 +152,7 @@ Wi-Fi:
 - four-client aggregate 5.31 MiB/s
 - sequential 6.14 MiB/s
 
-Do not call later cached/read-ahead rates raw router wire speed.
-
----
-
-## Do not regress
-
-- Do not add a field GIS server unless real target evidence proves it is required.
-- Do not revive Raspberry Pi / Pi-server architecture in active Map Fountain work.
-- Do not make public Internet connectivity mandatory.
-- Do not make normal Eaters use manual static IP configuration.
-- Windows accepted product is native TPKX over SMB.
-- Android accepted product is Static REST WMTS over local HTTPS.
-- Do not require Python or helper apps on Android.
-- Do not turn expanded WMTS trees into the canonical compact archive format.
-- Use short Android map IDs; long discovery-test names are not a standard.
-- Generate QR codes for long mobile URLs.
-- Do not optimize a guessed bottleneck before controlled testing exposes one.
-- Preserve controlled-test discipline: one major variable at a time.
-- Treat the intended ArcGIS Earth runtime as final acceptance authority.
-
----
-
-## Historical chronology
-
-### 2026-08-16 — active Windows WMTS precursor
-
-Windows served raster MBTiles through an active local HTTPS WMTS process to ArcGIS Earth Mobile over Android USB tether. This proved local/offline mobile WMTS compatibility but is not the current field appliance.
-
-### 2026-08-17 — Windows router-only breakthrough
-
-Flint 2 + USB SSD + Samba served a production-scale native TPKX directly to Windows ArcGIS Earth over Wi-Fi.
-
-### 2026-08-17 — Android router-only breakthrough
-
-Flint 2 built-in local HTTPS/WebDAV exact-file delivery served a pre-generated Static REST WMTS folder directly from the USB SSD to ArcGIS Earth Mobile. The mobile map rendered again after ArcGIS Earth cache clear and app restart.
-
-This removed the active field WMTS server from the Android runtime architecture.
+Do not call cached/read-ahead rates raw router wire speed.
 
 ---
 
@@ -193,35 +177,65 @@ ArcGIS Earth Wi-Fi success screenshot
 
 ---
 
-## Current next gates
+## Historical chronology
 
-1. freeze practical Static REST WMTS Factory workflow for giant folder trees;
-2. short IDs + QR automation;
-3. direct-to-SSD output and free-space preflight;
-4. larger/denser Android map;
-5. deliberate vs rapid mobile navigation characterization;
-6. cold close/reopen and Wi-Fi reconnect;
-7. multiple simultaneous Eaters;
-8. Windows Ethernet application comparison;
-9. basecamp Feeder after consumption/deployment behavior is stable.
+### 2026-08-16 — active Windows WMTS precursor
+
+Windows served raster MBTiles through an active local HTTPS WMTS process to ArcGIS Earth Mobile over Android USB tether. This proved local/offline mobile WMTS compatibility but is not the final router architecture.
+
+### 2026-08-17 — Windows router-only breakthrough
+
+Flint 2 + USB SSD + Samba served a production-scale native TPKX directly to Windows ArcGIS Earth over Wi-Fi.
+
+### 2026-08-17 — Android router-only breakthrough
+
+Flint 2 built-in local HTTPS/WebDAV exact-file delivery served a pre-generated Static REST WMTS folder directly from the USB SSD to ArcGIS Earth Mobile. The mobile map rendered again after ArcGIS Earth cache clear and app restart.
+
+### 2026-08-18 — primary personal-phone direction simplified
+
+Direct TPKX-on-microSD deployment became the current mobile direction. Map Fountain moved to PROVEN / PARKED reference status.
+
+---
+
+## Do not regress
+
+- Do not call Map Fountain a failed branch.
+- Do not make it mandatory phone infrastructure after the project deliberately simplified away from it.
+- Do not add a field GIS server unless a real future use case proves one is necessary.
+- Do not revive Raspberry Pi / Pi-server architecture by inertia.
+- Do not make public Internet connectivity mandatory.
+- Do not turn expanded WMTS trees into the canonical compact archive format.
+- Do not optimize the REST branch without an active need.
+- Do not lose the Windows SMB and Android Static REST acceptance evidence.
+- Do not turn incidental multi-client capability into a supported product claim until measured.
+
+---
+
+## Reopen conditions
+
+Resume active Map Fountain engineering only when at least one is true:
+
+1. Starlink/basecamp shared storage is being deliberately built;
+2. multiple clients demonstrably need one shared local map reservoir;
+3. direct removable storage fails a real operational requirement that shared storage solves better.
+
+Then resume controlled one-variable-at-a-time testing.
 
 ---
 
 ## Cold-start reading order
 
 1. `README.md`
-2. `docs/STATIC_REST_WMTS_ANDROID_ACCEPTANCE_2026-08-17.md`
+2. this file
 3. `docs/MAP_FOUNTAIN_ROUTER_ACCEPTANCE_2026-08-17.md`
-4. `docs/ACCEPTANCE_RECORD.md`
-5. `docs/TECHNICAL_ARCHITECTURE.md`
+4. `docs/STATIC_REST_WMTS_ANDROID_ACCEPTANCE_2026-08-17.md`
+5. `docs/ACCEPTANCE_RECORD.md`
 6. `ROADMAP.md`
 7. `CHANGELOG.md`
-8. newest commits/issues
-
-Report the current evidence state before changing behavior.
+8. Android deployment repository for current phone work
 
 ---
 
 ## Governing principle
 
-> **Keep the router dumb. Manufacture the right product for each ArcGIS Earth client.**
+> **Preserve the proof. Reopen the appliance only when shared storage is actually the better tool.**
