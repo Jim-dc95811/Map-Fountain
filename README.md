@@ -10,6 +10,12 @@
 
 **Keywords:** offline GIS, offline map server, ArcGIS Earth, TPKX, SMB, Samba, WMTS, Static REST WMTS, USB SSD, local Wi-Fi, GL.iNet Flint 2, network storage, field mapping, Starlink, offline NAS
 
+### Where this fits in the larger journey
+
+Map Fountain is one of the project's clearest examples of a recurring idea: **keep intelligence where it belongs and remove machinery that is not actually required.**
+
+The four-repository story is told in **[The Journey of Ideas](https://github.com/Jim-dc95811/Offline-GeoStack/blob/main/docs/JOURNEY_OF_IDEAS.md)**. Map Fountain's TPKX-over-SMB and router-only Static REST WMTS proofs are also documented in **[The Bridges We Had to Build](https://github.com/Jim-dc95811/Offline-GeoStack/blob/main/docs/THE_BRIDGES_WE_HAD_TO_BUILD.md)**.
+
 ---
 
 ## Current status
@@ -193,7 +199,7 @@ Preserve the work as engineering history unless shared-storage/mobile serving is
 1. **[Offline GeoStack](https://github.com/Jim-dc95811/Offline-GeoStack)** — master map manufacturing + field-system integration.
 2. **[Rasta Pyramid Factory](https://github.com/Jim-dc95811/Rasta-Pyramid-Factory)** — giant-raster / deep-zoom pyramid manufacturing.
 3. **Map Fountain** — LIVE-PROVEN shared-storage/network delivery evidence; currently parked from the normal personal-phone path.
-4. **[Android Field Maps + ArcGIS Earth](https://github.com/Jim-dc95811/Android-Field-Maps-and-ArcGIS-Earth-)** — deployment to the user: Android offline maps + Windows ArcGIS Earth field features.
+4. **[Android Field Maps + ArcGIS Earth](https://github.com/Jim-dc95811/Android-Field-Maps-and-ArcGIS-Earth-)** — deployment to the user: Android offline maps + Windows ArcGIS Earth field features + imagery training.
 
 ---
 
